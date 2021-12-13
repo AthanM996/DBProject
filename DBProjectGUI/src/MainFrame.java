@@ -5,22 +5,20 @@ import java.awt.Toolkit;
 
 public class MainFrame extends javax.swing.JFrame {
 
-    
-    public int getXDimension(JFrame frame) {
-        int dimensionX =(int) ((Toolkit.getDefaultToolkit().getScreenSize().width - frame.getWidth()) / 2 );
-        return dimensionX;      
+   
+    public void WindowAtCenter(JFrame objFrame){
+        Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int iCoordX = (objDimension.width - objFrame.getWidth()) / 2;
+        int iCoordY = (objDimension.height - objFrame.getHeight()) / 2;
+        objFrame.setLocation(iCoordX, iCoordY); 
     }
     
-    public int getYDimension(JFrame frame){
-        int dimensionY = (int) ((Toolkit.getDefaultToolkit().getScreenSize().height- frame.getHeight()) / 2);
-        return dimensionY;
-    }
     
     public MainFrame() {
         initComponents();
+        WindowAtCenter(this);
     }
 
-    
     
     
     
@@ -34,7 +32,7 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DBProject");
         setBackground(new java.awt.Color(4, 2, 2));
-        setLocation(getXDimension(this),getYDimension(this));
+        // setLocation(getXDimension(this),getYDimension(this));
         setMaximumSize(new java.awt.Dimension(900, 900));
         setMinimumSize(new java.awt.Dimension(700, 700));
         setName("MainFrame"); // NOI18N
