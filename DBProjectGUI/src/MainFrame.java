@@ -34,7 +34,7 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DBProject");
         setBackground(new java.awt.Color(4, 2, 2));
-        setLocation(getYDimension(this),getXDimension(this));
+        setLocation(getXDimension(this),getYDimension(this));
         setMaximumSize(new java.awt.Dimension(900, 900));
         setMinimumSize(new java.awt.Dimension(700, 700));
         setName("MainFrame"); // NOI18N
