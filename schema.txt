@@ -1,0 +1,44 @@
+invoice:
+id int PK
+contract_id int
+issued_by_id int FK to company
+issued_to_id int FK to company
+invoice_amount decimal(10,2)
+fee decimal(10,2)
+tax decimal(10,2)
+total_amount decimal(10,2)
+time_created timestamp
+date_issued date
+date_paid date
+
+
+service:
+id int PK
+service_type varchar(255)
+
+
+service_on_contract:
+id int PK
+contract_id int FK to contract
+service_id int FK to service
+details text N
+shopping_center_id int N FK to shopping_center
+shop_id int N FK to shop
+
+
+company:
+ola
+
+contract:
+bgazoume billing_frequency_id, first_invoice_date, 
+		 contract_type_id kai tous antistoixous pinakes 
+		 me tous opoious syndeonte
+		 
+
+shopping_center:
+ola ektos apo to details
+
+shop:
+ola + contract_id FK to contract
+
+shop_on_contract: ton petame
