@@ -12,15 +12,10 @@ date_issued date
 date_paid date
 
 
-service:
-id int PK
-service_type varchar(255)
-
-
 service_on_contract:
 id int PK
 contract_id int FK to contract
-service_id int FK to service
+service_type varchar(255)
 details text N
 shopping_center_id int N FK to shopping_center
 shop_id int N FK to shop
