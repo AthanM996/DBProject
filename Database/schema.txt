@@ -22,18 +22,18 @@ shop_id int N FK to shop
 
 
 company:
-ola
+ola pera apo company_code
 
 contract:
-bgazoume billing_frequency_id, first_invoice_date, 
+bgazoume contract_code, billing_frequency_id, first_invoice_date, 
 		 contract_type_id kai tous antistoixous pinakes 
 		 me tous opoious syndeonte
 		 
 
 shopping_center:
-ola ektos apo to details
+ola ektos apo to details, code
 
 shop:
-ola + contract_id FK to contract
+ola ektos apo shop_code + contract_id FK to contract
 
 shop_on_contract: ton petame
