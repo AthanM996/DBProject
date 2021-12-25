@@ -10,13 +10,13 @@ public class MainFrame extends javax.swing.JFrame {
     
     //Αρχικοποιηση Μεταβλητων
     int selected_Index_Value_Of_Malls_Frame = -1; //Μεταβλητη για την ευρεση του επιλεγμενου Mall 
-    ArrayList<Mall> list_Of_Malls = new ArrayList<Mall>(); //Λιστα με τα Malls της βασης 
+   // ArrayList<Mall> list_Of_Malls = new ArrayList<Mall>(); //Λιστα με τα Malls της βασης 
     
     /*Δημιουργια λιστας για το γεμισμα της MallsList και χρηση αυτη της λιστας στο Panel Shops για 
       ευρεση αμα εχει επιλεχτει καποιο Mall (αυτο γινεται με της χρηση της μεταβλητης selectedIndexValueOfMallsFrame η οποια 
       αμα εχει -1 δεν εχει επιλεχτει κατι)
     */
-    public void fillMallList(ArrayList<Mall> lista){
+    public void fillMallList(){ //ArrayList<Mall> lista
         Connection conn = startConn();
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Statement stmt;
@@ -31,8 +31,8 @@ public class MainFrame extends javax.swing.JFrame {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String address = rs.getString("address");
-                listmodel.add(listmodel.getSize(), address + name);
-                lista.add(new Mall(id,address,name));
+                listmodel.add(listmodel.getSize(),"Κωδικός: " + id + "Οναμα: " + name + "Διευθυνση: " + address);
+               // lista.add(new Mall(id,address,name));
             }
         }catch (SQLException ex){
             System.out.println("SQL Exception");
@@ -45,8 +45,15 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
             
-            
-            
+    /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
+    απο την λιστα MallsList */      
+    public void  deleteValueFromMallsList(int index){
+        Connection conn = startConn();
+        
+        DefaultListModel listModel = (DefaultListModel) MallsList.getModel();
+        listModel.remove(index);
+        
+    }       
             
             
     public Connection startConn(){
@@ -78,9 +85,10 @@ public class MainFrame extends javax.swing.JFrame {
             MallsInsertJF MallsJF = new MallsInsertJF();
             MallsJF.setVisible(true);
         }else if  (e.getSource() == DeleteMallsButton){
-            
+            int index_of_item=MallsList.getSelectedIndex();
+            deleteValueFromMallsList(index_of_item);
         }else if (e.getSource() == SelectMallsButton) {
-            selected_Index_Value_Of_Malls_Frame = 0;
+            selected_Index_Value_Of_Malls_Frame = MallsList.getSelectedIndex();
         }else if (e.getSource() == SearchMallsButton) {
 
         }else if(e.getSource() == EditMallsButton) {
@@ -92,7 +100,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         WindowAtCenter(this);
-       // fillMallList(list_Of_Malls);
+       // fillMallList();
     }
 
     
