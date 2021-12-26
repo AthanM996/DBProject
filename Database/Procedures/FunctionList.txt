@@ -3,13 +3,22 @@ Functions:
 		INSERT Εισάγει mall στην βάση μέσω GUI φόρμας από την οποία παίρνει στοιχεία για κάθε στήλη
 		SELECT Επιλέγει mall με βάση το id και εμφανίζει όλα τα shops που υπάρχουν σε αυτό το mall
 		DELETE Διαγράφει το επιλεγμένο mall, η επιλογή mall γίνεται από το GUI
-		EDIT Κάνει update το mall που επιλέγεται από το GUI
-		SEARCH Κάνει select και εμφανίζει όλα τα mall που έχουν το όνομα το οποίο εισάγεται από το GUI
+		EDIT Κάνει update το mall που επιλέγεται από το GUI, ΔΕΝ επιτρέπεται αλλαγή του id που είναι primary key
 
 	--Shops tab
-		INSERT ----το ίδιο με mall, το shopping_center_id στο GUI θα εμφανίζεται με dropbox το οποίο θα περιέχει όλα τα shopping_center_id και τα ονόματα του mall που τους αντιστοιχούν
+		INSERT ----το ίδιο με mall, το shopping_center_id στο GUI θα το παίρνει με dropbox το οποίο θα περιέχει όλα τα shopping_center_id 
+			   ----και τα ονόματα του mall που τους αντιστοιχούν
 		DELETE ----το ίδιο με mall
 		EDIT   ----το ίδιο με mall
-		SEARCH ----το ίδιο με mall
-		SELECT ----το ίδιο με mall
+		SELECT ----shop_id για παράμετρο, θα δούμε τι θα κάνει αργότερα
 		SHOW_ALL Κάνει SELECT * FROM SHOP
+		
+	--Contract
+		INSERT ----το ίδιο με mall, το provider_id θα το παίρνει από GUI μέσω dropdown box
+		DELETE ----το ίδιο με mall
+		EDIT   ----το ίδιο με mall
+		SELECT ----contract_id για παράμετρο, θα δούμε τι θα κάνει αργότερα
+		SHOW_ALL SELECT * FROM Contract
+		
+	--Company
+		τα ίδια πάνω κάτω
