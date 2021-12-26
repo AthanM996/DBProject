@@ -7,7 +7,7 @@ Functions:
 		SEARCH Κάνει select και εμφανίζει όλα τα mall που έχουν το όνομα το οποίο εισάγεται από το GUI
 
 	--Shops tab
-		INSERT ----το ίδιο με mall
+		INSERT ----το ίδιο με mall, το shopping_center_id στο GUI θα εμφανίζεται με dropbox το οποίο θα περιέχει όλα τα shopping_center_id και τα ονόματα του mall που τους αντιστοιχούν
 		DELETE ----το ίδιο με mall
 		EDIT   ----το ίδιο με mall
 		SEARCH ----το ίδιο με mall
