@@ -16,24 +16,25 @@ public class MainFrame extends javax.swing.JFrame {
       ευρεση αμα εχει επιλεχτει καποιο Mall (αυτο γινεται με της χρηση της μεταβλητης selectedIndexValueOfMallsFrame η οποια 
       αμα εχει -1 δεν εχει επιλεχτει κατι)
     */
-    public void fillMallList(){ //ArrayList<Mall> lista
-        Connection conn = startConn();
+    public void fillMallList(){//ArrayList<Mall> lista
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
+        Connection conn = startConn();
         Statement stmt;
         ResultSet rs;
-        ResultSetMetaData rsmd;
+        ResultSetMetaData rsmd;      
         //Θα καλειτε ενα function γαι να τραβηξει ολες τις τιμες του πινακα Shopping_center και να τις εισαγει στην λιστα list_Of_Malls
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("");
-            //loop
+            rs = stmt.executeQuery("SELECT Fill_Malls_List()");
+            //loop         
             while (rs.next()){
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String address = rs.getString("address");
-                listmodel.add(listmodel.getSize(),"Κωδικός: " + id + "Οναμα: " + name + "Διευθυνση: " + address);
+                String row=rs.getString(1);
+                row =row.substring(1, row.length()-1);
+                String[] values=row.split(",");
+                listmodel.addElement("Κωδικός: " + values[0] + " Οναμα: " + values[1] + " Διευθυνση: " + values[2]);
                // lista.add(new Mall(id,address,name));
             }
+            stmt.close();
         }catch (SQLException ex){
             System.out.println("SQL Exception");
             while (ex != null){
@@ -42,8 +43,15 @@ public class MainFrame extends javax.swing.JFrame {
                 System.out.println("ErrorCode: " + ex.getErrorCode());
                 ex.getNextException();
             }
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
         }
-    }
+    }    
+    
             
     /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
     απο την λιστα MallsList */      
@@ -58,18 +66,27 @@ public class MainFrame extends javax.swing.JFrame {
             
     public Connection startConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://dblabs.it.teithe.gr:5432/dbname" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
         Connection dbConnection = null;
         String     username = "postgres";
-        String     passwd = "1";
+        String     passwd = "147896325!";
         try{
             Class.forName(driverClassName);
-            dbConnection = DriverManager.getConnection(url, username, passwd);
         }catch (Exception e){
             System.out.println(e);
         }
-            return dbConnection;
-        
+        try{
+            dbConnection = DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+            System.out.println("SQL Exception");
+            while (ex != null){
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+                ex.getNextException();
+            }
+        }
+        return dbConnection;
     }
    
     public void WindowAtCenter(JFrame objFrame){
@@ -100,7 +117,7 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         WindowAtCenter(this);
-       // fillMallList();
+        fillMallList();
     }
 
     

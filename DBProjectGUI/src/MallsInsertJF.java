@@ -21,19 +21,53 @@ public class MallsInsertJF extends javax.swing.JFrame {
     //Μεθοδο για την Εισαγωγή των στοιχειων στην βαση
     public void submit(){
         MainFrame mf = new MainFrame();
+        PreparedStatement prepared;
+        ResultSet rs;
+        
+        
         int addressNum;
-        String mallName = newMallNameTF.getText();
-        String mallAddress = (newMallTownTF.getText() + " " + newMallAdressTF.getText() + " " );
+        //Ελεγχος για αμα εχουν συμπληρωθει ολα τα πεδια 
+        if ((newMallAdressNumTF.getText().isBlank()) || (newMallAdressTF.getText().isBlank()) || (newMallNameTF.getText().isBlank()) ||  (newMallCodeTF.getText().isBlank())){
+           javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!");
         //Προετοιμασια του address για να περασει στην βαση
-        try{
-            addressNum = Integer.parseInt(newMallAdressNumTF.getText());
-            mallAddress = mallAddress.concat(Integer.toString(addressNum));
-        }catch (Exception e){
-            System.out.println("Not interger value");
-            javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!");
+        }else{
+            //Αρχηκοποιηση Μεταβλητων ωστε να περασουν στην βαση
+            String mallName = newMallNameTF.getText();
+            String mallAddress =  newMallAdressTF.getText() + " " ;
+            try{
+                int mallCode = Integer.parseInt(newMallCodeTF.getText());
+            }catch (Exception e){
+                System.out.println("Not interger value");
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!");
+            }
+            try{
+                addressNum = Integer.parseInt(newMallAdressNumTF.getText());
+                mallAddress = mallAddress.concat(Integer.toString(addressNum));
+            }catch (Exception e){
+                System.out.println("Not interger value");
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!");
+            }
         }
         //Δημιουργια συνδεσης
         Connection conn = mf.startConn();
+        try{
+            prepared = conn.prepareStatement("");
+        }catch (SQLException ex){
+            System.out.println("SQL Exception");
+            while (ex != null){
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+                ex.getNextException();
+            }
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
+        }
+
         // Περασμα στην βαση
         //ΧΡΕΙΑΖΕΤΑΙ ΣΥΜΠΛΗΡΩΣΗ
 
@@ -45,7 +79,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         newMallAdressNumTF.setText(""); 
         newMallAdressTF.setText("");      
         newMallNameTF.setText("");   
-        newMallTownTF.setText("");
+        newMallCodeTF.setText("");
     }
 
 
@@ -80,7 +114,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         newMallSubmitButton = new javax.swing.JButton();
         newMallClearButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        newMallTownTF = new javax.swing.JTextField();
+        newMallCodeTF = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -110,6 +144,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
 
         newMallSubmitButton.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         newMallSubmitButton.setText("Submit");
+        newMallSubmitButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         newMallSubmitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -118,6 +153,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
 
         newMallClearButton.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         newMallClearButton.setText("Clear");
+        newMallClearButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         newMallClearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -125,9 +161,9 @@ public class MallsInsertJF extends javax.swing.JFrame {
         });
 
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel5.setText("Πόλη");
+        jLabel5.setText("Κωδικός");
 
-        newMallTownTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        newMallCodeTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -151,13 +187,13 @@ public class MallsInsertJF extends javax.swing.JFrame {
                             .addComponent(newMallAdressTF, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
                             .addComponent(newMallAdressNumTF)
                             .addComponent(newMallNameTF)
-                            .addComponent(newMallTownTF))))
+                            .addComponent(newMallCodeTF))))
                 .addContainerGap(225, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(newMallClearButton)
-                .addGap(66, 66, 66)
-                .addComponent(newMallSubmitButton)
+                .addComponent(newMallClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
+                .addComponent(newMallSubmitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(52, 52, 52))
         );
         jPanel1Layout.setVerticalGroup(
@@ -172,7 +208,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(newMallTownTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newMallCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(newMallAdressTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -225,8 +261,8 @@ public class MallsInsertJF extends javax.swing.JFrame {
     private javax.swing.JTextField newMallAdressNumTF;
     private javax.swing.JTextField newMallAdressTF;
     private javax.swing.JButton newMallClearButton;
+    private javax.swing.JTextField newMallCodeTF;
     private javax.swing.JTextField newMallNameTF;
     private javax.swing.JButton newMallSubmitButton;
-    private javax.swing.JTextField newMallTownTF;
     // End of variables declaration//GEN-END:variables
 }

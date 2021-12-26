@@ -1,0 +1,3 @@
+CREATE OR REPLACE FUNCTION Submit_New_Mall(int,varchar,varchar) RETURNS void AS $$ 
+INSERT INTO Shopping_Center VALUES($1,$2,$3);
+$$ LANGUAGE SQL; 
