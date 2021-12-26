@@ -1,0 +1,15 @@
+Functions:
+	--Malls tab
+		INSERT Εισάγει mall στην βάση μέσω GUI φόρμας από την οποία παίρνει στοιχεία για κάθε στήλη
+		SELECT Επιλέγει mall με βάση το id και εμφανίζει όλα τα shops που υπάρχουν σε αυτό το mall
+		DELETE Διαγράφει το επιλεγμένο mall, η επιλογή mall γίνεται από το GUI
+		EDIT Κάνει update το mall που επιλέγεται από το GUI
+		SEARCH Κάνει select και εμφανίζει όλα τα mall που έχουν το όνομα το οποίο εισάγεται από το GUI
+
+	--Shops tab
+		INSERT ----το ίδιο με mall
+		DELETE ----το ίδιο με mall
+		EDIT   ----το ίδιο με mall
+		SEARCH ----το ίδιο με mall
+		SELECT ----το ίδιο με mall
+		SHOW_ALL Κάνει SELECT * FROM SHOP
