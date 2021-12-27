@@ -23,7 +23,9 @@ public class MallsInsertJF extends javax.swing.JFrame {
         MainFrame mf = new MainFrame();
         PreparedStatement prepared;
         ResultSet rs;
-        
+        String mallName,mallAddress = null;
+        int mallCode = 0;
+        boolean error = false;
         
         int addressNum;
         //Ελεγχος για αμα εχουν συμπληρωθει ολα τα πεδια 
@@ -32,13 +34,14 @@ public class MallsInsertJF extends javax.swing.JFrame {
         //Προετοιμασια του address για να περασει στην βαση
         }else{
             //Αρχηκοποιηση Μεταβλητων ωστε να περασουν στην βαση
-            String mallName = newMallNameTF.getText();
-            String mallAddress =  newMallAdressTF.getText() + " " ;
+            mallName = newMallNameTF.getText();
+            mallAddress =  newMallAdressTF.getText() + " " ;
             try{
-                int mallCode = Integer.parseInt(newMallCodeTF.getText());
+                mallCode = Integer.parseInt(newMallCodeTF.getText());
             }catch (Exception e){
                 System.out.println("Not interger value");
-                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!"); 
+                error = true;
             }
             try{
                 addressNum = Integer.parseInt(newMallAdressNumTF.getText());
@@ -46,32 +49,43 @@ public class MallsInsertJF extends javax.swing.JFrame {
             }catch (Exception e){
                 System.out.println("Not interger value");
                 javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!");
+                error = true;
             }
+            
+            //Ελεγχος για αμα πηγε κατι στραβα
+            if (error){
+                System.out.println("Error");
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values!");
+            }else{
+                //Δημιουργια συνδεσης
+                Connection conn = mf.startConn();
+                try{
+                    prepared = conn.prepareStatement("SELECT Submit_New_Mall(?,?,?)");
+                    prepared.setInt(1,mallCode);
+                    prepared.setString(2, mallName);
+                    prepared.setString(3, mallAddress);
+                    prepared.executeQuery(); 
+                    prepared.close();
+                }catch (SQLException ex){
+                    System.out.println("SQL Exception");
+                    while (ex != null){
+                        System.out.println("Message: " + ex.getMessage());
+                        System.out.println("SQLState: " + ex.getSQLState());
+                        System.out.println("ErrorCode: " + ex.getErrorCode());
+                        ex.getNextException();
+                    }
+                }finally{
+                    try{
+                        conn.close();
+                    }catch (SQLException ex){
+                        System.out.println(ex);
+                    }
+                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct");
+                }
+            }
+           
+            
         }
-        //Δημιουργια συνδεσης
-        Connection conn = mf.startConn();
-        try{
-            prepared = conn.prepareStatement("");
-        }catch (SQLException ex){
-            System.out.println("SQL Exception");
-            while (ex != null){
-                System.out.println("Message: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("ErrorCode: " + ex.getErrorCode());
-                ex.getNextException();
-            }
-        }finally{
-            try{
-                conn.close();
-            }catch (SQLException ex){
-                System.out.println(ex);
-            }
-        }
-
-        // Περασμα στην βαση
-        //ΧΡΕΙΑΖΕΤΑΙ ΣΥΜΠΛΗΡΩΣΗ
-
-
     }
 
     //Μεθοδος για την εκαθαριση των TextFields στο MallsInsertJF(JFrame)  
