@@ -10,12 +10,19 @@ public class MainFrame extends javax.swing.JFrame {
     
     //Αρχικοποιηση Μεταβλητων
     int selected_Index_Value_Of_Malls_Frame = -1; //Μεταβλητη για την ευρεση του επιλεγμενου Mall 
-   // ArrayList<Mall> list_Of_Malls = new ArrayList<Mall>(); //Λιστα με τα Malls της βασης 
-    
+
     /*Δημιουργια λιστας για το γεμισμα της MallsList και χρηση αυτη της λιστας στο Panel Shops για 
       ευρεση αμα εχει επιλεχτει καποιο Mall (αυτο γινεται με της χρηση της μεταβλητης selectedIndexValueOfMallsFrame η οποια 
       αμα εχει -1 δεν εχει επιλεχτει κατι)
     */
+    
+    
+    public void refresh(){
+        DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
+        listmodel.removeAllElements();
+        fillMallList();
+    }
+    
     public void fillMallList(){//ArrayList<Mall> lista
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = startConn();
@@ -32,6 +39,7 @@ public class MainFrame extends javax.swing.JFrame {
                 row =row.substring(1, row.length()-1);
                 String[] values=row.split(",");
                 listmodel.addElement("Κωδικός: " + values[0] + " Οναμα: " + values[1] + " Διευθυνση: " + values[2]);
+                System.out.println(values[2]);
                // lista.add(new Mall(id,address,name));
             }
             stmt.close();
@@ -106,8 +114,8 @@ public class MainFrame extends javax.swing.JFrame {
             deleteValueFromMallsList(index_of_item);
         }else if (e.getSource() == SelectMallsButton) {
             selected_Index_Value_Of_Malls_Frame = MallsList.getSelectedIndex();
-        }else if (e.getSource() == SearchMallsButton) {
-
+        }else if (e.getSource() == RefreshMallsButton) {
+            refresh();
         }else if(e.getSource() == EditMallsButton) {
             
         }    
@@ -136,7 +144,7 @@ public class MainFrame extends javax.swing.JFrame {
         InsertMallsButton = new javax.swing.JButton();
         DeleteMallsButton = new javax.swing.JButton();
         SelectMallsButton = new javax.swing.JButton();
-        SearchMallsButton = new javax.swing.JButton();
+        RefreshMallsButton = new javax.swing.JButton();
         EditMallsButton = new javax.swing.JButton();
         ShopTab = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -159,19 +167,22 @@ public class MainFrame extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(850, 850));
 
         TabbedPane.setBackground(new java.awt.Color(244, 211, 211));
+        TabbedPane.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         TabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         TabbedPane.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         TabbedPane.setName("TabMenu"); // NOI18N
         TabbedPane.setOpaque(true);
 
         MallsTab.setBackground(new java.awt.Color(200, 255, 240));
+        MallsTab.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         MallsTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         MallsTab.setName("MallsTab"); // NOI18N
 
         MallsList.setFont(new java.awt.Font("Arial", 1, 10)); // NOI18N
+        MallsList.setModel(new javax.swing.DefaultListModel<String>()
+        );
         MallsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         MallsList.setSelectedIndex(0);
-        MallsList.setModel(new javax.swing.DefaultListModel<String>());
         jScrollPane1.setViewportView(MallsList);
         MallsList.getAccessibleContext().setAccessibleName("MallsList");
 
@@ -180,6 +191,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         InsertMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         InsertMallsButton.setText("Insert");
+        InsertMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         InsertMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -188,6 +200,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         DeleteMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         DeleteMallsButton.setText("Delete");
+        DeleteMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         DeleteMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -196,6 +209,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         SelectMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         SelectMallsButton.setText("Select");
+        SelectMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         SelectMallsButton.setMaximumSize(new java.awt.Dimension(65, 25));
         SelectMallsButton.setMinimumSize(new java.awt.Dimension(65, 25));
         SelectMallsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -204,9 +218,10 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        SearchMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        SearchMallsButton.setText("Search");
-        SearchMallsButton.addActionListener(new java.awt.event.ActionListener() {
+        RefreshMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        RefreshMallsButton.setText("Refresh");
+        RefreshMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        RefreshMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
             }
@@ -214,6 +229,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         EditMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditMallsButton.setText("Edit");
+        EditMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         EditMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -241,7 +257,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(EditMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(33, 33, 33)
-                                .addComponent(SearchMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(RefreshMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(148, Short.MAX_VALUE))
         );
@@ -256,7 +272,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(MallsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InsertMallsButton)
                     .addComponent(DeleteMallsButton)
-                    .addComponent(SearchMallsButton)
+                    .addComponent(RefreshMallsButton)
                     .addComponent(SelectMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(EditMallsButton))
                 .addContainerGap(499, Short.MAX_VALUE))
@@ -266,6 +282,7 @@ public class MainFrame extends javax.swing.JFrame {
         MallsTab.getAccessibleContext().setAccessibleName("MallsTab");
 
         ShopTab.setBackground(new java.awt.Color(200, 255, 240));
+        ShopTab.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         ShopTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
 
         ShopsList.setFont(new java.awt.Font("Arial", 1, 10)); // NOI18N
@@ -279,31 +296,27 @@ public class MainFrame extends javax.swing.JFrame {
 
         InsertShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         InsertShopsButton.setText("Insert");
-        InsertShopsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               // InsertShopsButtonActionPerformed(evt);
-            }
-        });
+        InsertShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         DeleteShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         DeleteShopsButton.setText("Delete");
+        DeleteShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         SearchShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         SearchShopsButton.setText("Search");
-        SearchShopsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               // SearchShopsButtonActionPerformed(evt);
-            }
-        });
+        SearchShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         SelectShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         SelectShopsButton.setText("Select");
+        SelectShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         ShowAllShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         ShowAllShopsButton.setText("Show All");
+        ShowAllShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         EditShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditShopsButton.setText(" Edit");
+        EditShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         javax.swing.GroupLayout ShopTabLayout = new javax.swing.GroupLayout(ShopTab);
         ShopTab.setLayout(ShopTabLayout);
@@ -353,6 +366,7 @@ public class MainFrame extends javax.swing.JFrame {
         ShopTab.getAccessibleContext().setAccessibleName("ShopTab");
 
         ConstantTab.setBackground(new java.awt.Color(200, 255, 240));
+        ConstantTab.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         ConstantTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
 
         javax.swing.GroupLayout ConstantTabLayout = new javax.swing.GroupLayout(ConstantTab);
@@ -430,7 +444,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton InsertShopsButton;
     private javax.swing.JList MallsList;
     private javax.swing.JPanel MallsTab;
-    private javax.swing.JButton SearchMallsButton;
+    private javax.swing.JButton RefreshMallsButton;
     private javax.swing.JButton SearchShopsButton;
     private javax.swing.JButton SelectMallsButton;
     private javax.swing.JButton SelectShopsButton;
