@@ -135,6 +135,12 @@ DELETE FROM shopping_center * WHERE id = $1;
 $$ 
 LANGUAGE SQL;
 
+CREATE OR REPLACE FUNCTION edit_mall(integer, character varying, character varying) RETURNS void AS 
+$$
+UPDATE shopping_center SET id = $1, name = $2, address = $3 WHERE id =$1;
+$$
+LANGUAGE SQL;
+
 -- Shop
 CREATE OR REPLACE FUNCTION all_stores() RETURNS SETOF text AS 
 $$ 
