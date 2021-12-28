@@ -40,12 +40,15 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="TabbedPane" alignment="0" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="TabbedPane" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="TabbedPane" alignment="0" max="-2" attributes="0"/>
+          <Component id="TabbedPane" alignment="1" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -130,7 +133,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="148" max="32767" attributes="0"/>
+                      <EmptySpace pref="136" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -171,7 +174,7 @@
                       <Connection code="new javax.swing.DefaultListModel&lt;String&gt;()&#xd;&#xa;" type="code"/>
                     </Property>
                     <Property name="selectionMode" type="int" value="0"/>
-                    <Property name="selectedIndex" type="int" value="0"/>
+                    <Property name="selectedIndex" type="int" value="1"/>
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="MallsList"/>
@@ -201,6 +204,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="InsertMallsButtonActionPerformed"/>
@@ -217,6 +221,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DeleteMallsButtonActionPerformed"/>
@@ -233,6 +238,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[65, 25]"/>
                 </Property>
@@ -255,6 +261,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RefreshMallsButtonActionPerformed"/>
@@ -271,6 +278,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="EditMallsButtonActionPerformed"/>
@@ -326,14 +334,14 @@
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="EditShopsButton" min="-2" pref="80" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                              <Component id="SearchShopsButton" min="-2" pref="80" max="-2" attributes="0"/>
+                              <Component id="RefreshShopsButton" min="-2" pref="80" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                               <Component id="SelectShopsButton" min="-2" pref="80" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                               <Component id="ShowAllShopsButton" min="-2" pref="69" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="74" max="32767" attributes="0"/>
+                      <EmptySpace pref="62" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -351,7 +359,7 @@
                           <Component id="SelectShopsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="ShowAllShopsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="EditShopsButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="SearchShopsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="RefreshShopsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="477" max="32767" attributes="0"/>
                   </Group>
@@ -371,8 +379,8 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Arial" size="10" style="1"/>
                     </Property>
-                    <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                      <StringArray count="0"/>
+                    <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new javax.swing.DefaultListModel&lt;String&gt;()" type="code"/>
                     </Property>
                     <Property name="selectionMode" type="int" value="0"/>
                     <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -403,6 +411,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="DeleteShopsButton">
@@ -416,19 +425,21 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="SearchShopsButton">
+            <Component class="javax.swing.JButton" name="RefreshShopsButton">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Arial" size="12" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Search"/>
+                <Property name="text" type="java.lang.String" value="Refresh"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="SelectShopsButton">
@@ -442,6 +453,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="ShowAllShopsButton">
@@ -455,6 +467,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="EditShopsButton">
@@ -468,6 +481,7 @@
                     <BevelBorder/>
                   </Border>
                 </Property>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -504,7 +518,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="833" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="821" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

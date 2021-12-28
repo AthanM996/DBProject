@@ -157,6 +157,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(200, 255, 240));
+        jPanel1.setMinimumSize(new java.awt.Dimension(100, 100));
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel1.setText("Εισαγωγή Εμπορικού Κέντρου");
