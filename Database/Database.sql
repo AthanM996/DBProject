@@ -1,94 +1,55 @@
 -- SCHEMA: public
 
-DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA IF NOT EXISTS public;
 
-CREATE SCHEMA IF NOT EXISTS public
-    AUTHORIZATION postgres;
 
-COMMENT ON SCHEMA public
-    IS 'standard public schema';
+DROP TABLE IF EXISTS public.Shopping_center CASCADE;
 
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-GRANT ALL ON SCHEMA public TO postgres;
-
--- Table: public.Shopping_center
-
-DROP TABLE IF EXISTS public.Shopping_center;
-
-CREATE TABLE IF NOT EXISTS public.Shopping_center
+CREATE TABLE public.Shopping_center
 (
     id integer NOT NULL,
-    name character varying(255) COLLATE pg_catalog."default",
-    address character varying(255) COLLATE pg_catalog."default",
+    name character varying(255),
+    address character varying(255),
     CONSTRAINT Shopping_center_pkey PRIMARY KEY (id)
-)
+);
 
-TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.Shopping_center
-    OWNER to postgres;
-	
--- Table: public.Company
+DROP TABLE IF EXISTS public.Company CASCADE;
 
-DROP TABLE IF EXISTS public.Company;
-
-CREATE TABLE IF NOT EXISTS public.Company
+CREATE TABLE public.Company
 (
     id integer NOT NULL,
-    company_name character varying(255) COLLATE pg_catalog."default",
-    address character varying(255) COLLATE pg_catalog."default",
-    contact_person character varying(100) COLLATE pg_catalog."default",
-    contact_email character varying(100) COLLATE pg_catalog."default",
-    contact_phone character varying(15) COLLATE pg_catalog."default",
-    contact_mobile character varying(15) COLLATE pg_catalog."default",
-    details text COLLATE pg_catalog."default",
+    company_name character varying(255),
+    address character varying(255),
+    contact_person character varying(100),
+    contact_email character varying(100),
+    contact_phone character varying(15),
+    contact_mobile character varying(15),
     CONSTRAINT Company_pkey PRIMARY KEY (id)
-)
+);
 
-TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.Company
-    OWNER to postgres;
-	
--- Table: public.Contract
+DROP TABLE IF EXISTS public.Contract CASCADE;
 
-DROP TABLE IF EXISTS public.Contract;
-
-CREATE TABLE IF NOT EXISTS public.Contract
+CREATE TABLE public.Contract
 (
     id integer NOT NULL,
-    contract_details text COLLATE pg_catalog."default",
     date_signed date,
     date_active_from date,
     date_active_to date,
-    provider_id integer,
-    billing_units character varying(25) COLLATE pg_catalog."default",
+    company_id integer,
+    billing_units character varying(25),
     CONSTRAINT Contract_pkey PRIMARY KEY (id),
-    CONSTRAINT Contract_fkey_Company_id FOREIGN KEY (provider_id)
-        REFERENCES public.Company (id) MATCH SIMPLE
+    CONSTRAINT Contract_fkey_Company_id FOREIGN KEY (company_id)
+        REFERENCES public.Company (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
+        ON DELETE CASCADE -- Na to ksanakoitaksw
+);
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.Contract
-    OWNER to postgres;
--- Index: fki_Contract_fkey
-
-DROP INDEX IF EXISTS public.fki_Contract_fkey;
-
-CREATE INDEX IF NOT EXISTS fki_Contract_fkey
-    ON public.Contract USING btree
-    (provider_id ASC NULLS LAST)
-    TABLESPACE pg_default;
-	
--- Table: public.Invoice
 
 DROP TABLE IF EXISTS public.Invoice;
 
-CREATE TABLE IF NOT EXISTS public.Invoice
+CREATE TABLE public.Invoice
 (
     id integer NOT NULL,
     contract_id integer,
@@ -102,144 +63,90 @@ CREATE TABLE IF NOT EXISTS public.Invoice
     date_paid date,
     CONSTRAINT Invoice_pkey PRIMARY KEY (id),
     CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (issued_by_id)
-        REFERENCES public.Company (id) MATCH SIMPLE
+        REFERENCES public.Company (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT Invoice_fkey_Contract_id FOREIGN KEY (contract_id)
-        REFERENCES public.Contract (id) MATCH SIMPLE
+        REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.Invoice
-    OWNER to postgres;
--- Index: fki_C
-
-DROP INDEX IF EXISTS public.fki_C;
-
-CREATE INDEX IF NOT EXISTS fki_C
-    ON public.Invoice USING btree
-    (issued_by_id ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: fki_Contract_fkey_Company_id
-
-DROP INDEX IF EXISTS public.fki_Contract_fkey_Company_id;
-
-CREATE INDEX IF NOT EXISTS fki_Contract_fkey_Company_id
-    ON public.Invoice USING btree
-    (issued_by_id ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: fki_F
-
-DROP INDEX IF EXISTS public.fki_F;
-
-CREATE INDEX IF NOT EXISTS fki_F
-    ON public.Invoice USING btree
-    (contract_id ASC NULLS LAST)
-    TABLESPACE pg_default;
-	
--- Table: public.Shop
 
 DROP TABLE IF EXISTS public.Shop;
 
-CREATE TABLE IF NOT EXISTS public.Shop
+CREATE TABLE public.Shop
 (
     id integer NOT NULL,
-    shop_name character varying(255) COLLATE pg_catalog."default",
+    shop_name character varying(255),
     shopping_center_id integer,
-    floor character varying(20) COLLATE pg_catalog."default",
-    location character varying(255) COLLATE pg_catalog."default",
-    description text COLLATE pg_catalog."default",
+    floor character varying(20),
+    location character varying(255),
     active_from date,
     active_to date,
     active date,
     contract_id integer,
+	service_type character varying(100),
     CONSTRAINT Shop_pkey PRIMARY KEY (id),
     CONSTRAINT Shop_fkey_Contract_id FOREIGN KEY (contract_id)
-        REFERENCES public.Contract (id) MATCH SIMPLE
+        REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT Shop_fkey_ShoppingCenter_id FOREIGN KEY (shopping_center_id)
-        REFERENCES public.Shopping_center (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
+        REFERENCES public.Shopping_center (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+	CONSTRAINT Shop_check_serviceType CHECK (service_type IN ('food or drink', 'entertaintment', 'retail')) -- PROSWRINO!!!
+);
 
-TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.Shop
-    OWNER to postgres;
--- Index: fki_Shop_fkey_Contract_id
+-- Functions
 
-DROP INDEX IF EXISTS public.fki_Shop_fkey_Contract_id;
+-- Shopping_center
+CREATE OR REPLACE FUNCTION all_malls() RETURNS SETOF text AS 
+$$ 
+SELECT CONCAT_WS(',', id, name, address) 
+FROM Shopping_center; 
+$$ 
+LANGUAGE SQL;
 
-CREATE INDEX IF NOT EXISTS fki_Shop_fkey_Contract_id
-    ON public.Shop USING btree
-    (contract_id ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: fki_Shop_fkey_ShoppingCenter_id
+CREATE OR REPLACE FUNCTION insert_mall(integer, character varying, character varying) RETURNS void AS
+$$
+INSERT INTO Shopping_center(id, name, address) 
+VALUES ($1, $2, $3);
+$$
+LANGUAGE SQL;
 
-DROP INDEX IF EXISTS public.fki_Shop_fkey_ShoppingCenter_id;
+CREATE OR REPLACE FUNCTION show_stores_of_mall(integer) RETURNS text AS
+$$
+SELECT CONCAT_WS(',', shop.id, shop.shop_name, shop.shopping_center_id, shop.floor, 
+				 shop.location, shop.active_from, shop.active_to, shop.active, shop.contract_id, 
+				 shop.service_type) 
+				 FROM shop 
+				 INNER JOIN shopping_center sc 
+				 ON (shop.shopping_center_id = sc.id) 
+				 WHERE shop.shopping_center_id = sc.id AND sc.id = $1;
+$$ 
+LANGUAGE SQL;
 
-CREATE INDEX IF NOT EXISTS fki_Shop_fkey_ShoppingCenter_id
-    ON public.Shop USING btree
-    (shopping_center_id ASC NULLS LAST)
-    TABLESPACE pg_default;
-	
--- Table: public.Service
+CREATE OR REPLACE FUNCTION delete_mall(integer) RETURNS void AS
+$$
+DELETE FROM shopping_center * WHERE id = $1;
+$$ 
+LANGUAGE SQL;
 
-DROP TABLE IF EXISTS public.Service;
+CREATE OR REPLACE FUNCTION edit_mall(integer, character varying, character varying) RETURNS void AS 
+$$
+UPDATE shopping_center SET id = $1, name = $2, address = $3 WHERE id =$1;
+$$
+LANGUAGE SQL;
 
-CREATE TABLE IF NOT EXISTS public.Service
-(
-    id integer NOT NULL,
-    contract_id integer,
-    service_type character varying(255) COLLATE pg_catalog."default",
-    details text COLLATE pg_catalog."default",
-    shopping_center_id integer,
-    shop_id integer,
-    CONSTRAINT Service_pkey PRIMARY KEY (id),
-    CONSTRAINT Service_fkey_Contract_id FOREIGN KEY (contract_id)
-        REFERENCES public."Contract" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT Service_fkey_Shop_id FOREIGN KEY (shop_id)
-        REFERENCES public.Shop (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT Service_fkey_ShoppingCenter_id FOREIGN KEY (shopping_center_id)
-        REFERENCES public.Shopping_center (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.Service
-    OWNER to postgres;
--- Index: fki_Service_fkey_Contract_id
-
-DROP INDEX IF EXISTS public.fki_Service_fkey_Contract_id;
-
-CREATE INDEX IF NOT EXISTS fki_Service_fkey_Contract_id
-    ON public.Service USING btree
-    (contract_id ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: fki_Service_fkey_Shop_id
-
-DROP INDEX IF EXISTS public.fki_Service_fkey_Shop_id;
-
-CREATE INDEX IF NOT EXISTS fki_Service_fkey_Shop_id
-    ON public.Service USING btree
-    (shop_id ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: fki_Service_fkey_ShoppingCenter_id
-
-DROP INDEX IF EXISTS public.fki_Service_fkey_ShoppingCenter_id;
-
-CREATE INDEX IF NOT EXISTS fki_Service_fkey_ShoppingCenter_id
-    ON public.Service USING btree
-    (shopping_center_id ASC NULLS LAST)
-    TABLESPACE pg_default;
+-- Shop
+CREATE OR REPLACE FUNCTION all_stores() RETURNS SETOF text AS 
+$$ 
+SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor, 
+				 location, active_from, active_to, active, contract_id, 
+				 service_type) 
+				 FROM Shop; 
+$$ 
+LANGUAGE SQL;
