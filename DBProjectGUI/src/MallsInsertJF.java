@@ -21,6 +21,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
     //Μεθοδο για την Εισαγωγή των στοιχειων στην βαση
     public void submit(){
         MainFrame mf = new MainFrame();
+        Connection conn = null;
         PreparedStatement prepared;
         ResultSet rs;
         String mallName,mallAddress = null;
@@ -38,6 +39,10 @@ public class MallsInsertJF extends javax.swing.JFrame {
             mallAddress =  newMallAdressTF.getText() + " " ;
             try{
                 mallCode = Integer.parseInt(newMallCodeTF.getText());
+                if (mallCode<0){
+                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0");
+                    error=true;
+                }
             }catch (Exception e){
                 System.out.println("Not interger value");
                 javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!"); 
@@ -45,42 +50,56 @@ public class MallsInsertJF extends javax.swing.JFrame {
             }
             try{
                 addressNum = Integer.parseInt(newMallAdressNumTF.getText());
-                mallAddress = mallAddress.concat(Integer.toString(addressNum));
+                if (addressNum<0){
+                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0");
+                    error=true;
+                }else{
+                   // mallAddress = mallAddress.concat(Integer.toString(addressNum));
+                   mallAddress = mallAddress + Integer.toString(addressNum);
+                }
             }catch (Exception e){
                 System.out.println("Not interger value");
                 javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!");
                 error = true;
             }
             
+            
             //Ελεγχος για αμα πηγε κατι στραβα
             if (error){
                 System.out.println("Error");
-                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!");
             }else{
                 //Δημιουργια συνδεσης
-                Connection conn = mf.startConn();
+                conn = mf.startConn();
                 try{
                     prepared = conn.prepareStatement("SELECT Submit_New_Mall(?,?,?)");
                     prepared.setInt(1,mallCode);
                     prepared.setString(2, mallName);
                     prepared.setString(3, mallAddress);
-                    prepared.executeQuery(); 
+                    prepared.executeQuery();
+                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct");
                     prepared.close();
                 }catch (SQLException ex){
                     System.out.println("SQL Exception");
-                    while (ex != null){
+                    switch (ex.getSQLState()){
+                        case "23505":
+                            javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code");
+                            clear();
+//                            MallsInsertJF MallsJF = new MallsInsertJF();
+//                            MallsJF.setVisible(true);
+//                            kill(this);
+                            break;
+                    }
                         System.out.println("Message: " + ex.getMessage());
                         System.out.println("SQLState: " + ex.getSQLState());
                         System.out.println("ErrorCode: " + ex.getErrorCode());
-                        ex.getNextException();
-                    }
+                    
                 }finally{
                     try{
                         conn.close();
                     }catch (SQLException ex){
                         System.out.println(ex);
                     }
-                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct");
                 }
             }
            
@@ -96,7 +115,12 @@ public class MallsInsertJF extends javax.swing.JFrame {
         newMallCodeTF.setText("");
     }
 
-
+        
+    
+    
+    public void kill(JFrame frame){
+        frame.dispose();
+    }
 
     
     public void WindowAtCenter(JFrame objFrame){
