@@ -1,0 +1,7 @@
+CREATE OR REPLACE FUNCTION Fill_Shops() RETURNS TABLE(shop_id integer,
+												      shop_name character varying,
+												      mall_id integer)
+AS $$
+SELECT S.id , S.shop_name , S.shopping_center_id
+FROM Shop S ;
+$$ LANGUAGE SQL;

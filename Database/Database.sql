@@ -142,11 +142,8 @@ $$
 LANGUAGE SQL;
 
 -- Shop
-CREATE OR REPLACE FUNCTION all_stores() RETURNS SETOF text AS 
+CREATE OR REPLACE FUNCTION all_stores() RETURNS SETOF Shop AS 
 $$ 
-SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor, 
-				 location, active_from, active_to, active, contract_id, 
-				 service_type) 
-				 FROM Shop; 
+SELECT * FROM Shop; 
 $$ 
 LANGUAGE SQL;

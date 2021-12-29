@@ -31,7 +31,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         int addressNum;
         //Ελεγχος για αμα εχουν συμπληρωθει ολα τα πεδια 
         if ((newMallAdressNumTF.getText().isBlank()) || (newMallAdressTF.getText().isBlank()) || (newMallNameTF.getText().isBlank()) ||  (newMallCodeTF.getText().isBlank())){
-           javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!");
+           javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         //Προετοιμασια του address για να περασει στην βαση
         }else{
             //Αρχηκοποιηση Μεταβλητων ωστε να περασουν στην βαση
@@ -40,18 +40,18 @@ public class MallsInsertJF extends javax.swing.JFrame {
             try{
                 mallCode = Integer.parseInt(newMallCodeTF.getText());
                 if (mallCode<0){
-                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0");
+                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                     error=true;
                 }
             }catch (Exception e){
                 System.out.println("Not interger value");
-                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!"); 
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE); 
                 error = true;
             }
             try{
                 addressNum = Integer.parseInt(newMallAdressNumTF.getText());
                 if (addressNum<0){
-                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0");
+                    javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number greater than 0","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                     error=true;
                 }else{
                    // mallAddress = mallAddress.concat(Integer.toString(addressNum));
@@ -59,7 +59,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
                 }
             }catch (Exception e){
                 System.out.println("Not interger value");
-                javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 error = true;
             }
             
@@ -67,7 +67,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
             //Ελεγχος για αμα πηγε κατι στραβα
             if (error){
                 System.out.println("Error");
-                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 //Δημιουργια συνδεσης
                 conn = mf.startConn();
@@ -77,13 +77,13 @@ public class MallsInsertJF extends javax.swing.JFrame {
                     prepared.setString(2, mallName);
                     prepared.setString(3, mallAddress);
                     prepared.executeQuery();
-                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct");
+                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     prepared.close();
                 }catch (SQLException ex){
                     System.out.println("SQL Exception");
                     switch (ex.getSQLState()){
                         case "23505":
-                            javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code");
+                            javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                             clear();
 //                            MallsInsertJF MallsJF = new MallsInsertJF();
 //                            MallsJF.setVisible(true);

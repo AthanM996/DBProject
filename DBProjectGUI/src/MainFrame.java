@@ -8,23 +8,16 @@ import javax.swing.DefaultListModel;
 
 public class MainFrame extends javax.swing.JFrame {
     
-    //Αρχικοποιηση Μεταβλητων
-    boolean if_mall_is_selected=false; //Μεταβλητη για την ευρεση του επιλεγμενου Mall 
 
-    /*Δημιουργια λιστας για το γεμισμα της MallsList και χρηση αυτη της λιστας στο Panel Shops για 
-      ευρεση αμα εχει επιλεχτει καποιο Mall (αυτο γινεται με της χρηση της μεταβλητης selectedIndexValueOfMallsFrame η οποια 
-      αμα εχει -1 δεν εχει επιλεχτει κατι)
-    */
-    
     //Μεθοδος για την ενεργοποιηση των buttons 
-    public void enable(){
+    public final void enable(){
         if(MallsList.getModel().getSize()>0){
-                //Mall
-                RefreshMallsButton.setEnabled(true);
-                InsertMallsButton.setEnabled(true);
-                DeleteMallsButton.setEnabled(true);
-                EditMallsButton.setEnabled(true);
-                SelectMallsButton.setEnabled(true);
+            //Mall
+            RefreshMallsButton.setEnabled(true);
+            InsertMallsButton.setEnabled(true);
+            DeleteMallsButton.setEnabled(true);
+            EditMallsButton.setEnabled(true);
+            SelectMallsButton.setEnabled(true);
         }
         if (ShopsList.getModel().getSize()>0){
             //Shop
@@ -59,18 +52,18 @@ public class MainFrame extends javax.swing.JFrame {
             */
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no shops for this Mall");
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no shops for this Mall","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                fillShopsList();
             }else{
                 do {
                     String row = rs.getString(1);
                     System.out.println(row);
                     row = row.substring(1, row.length()-1);
                     String[] values_list = row.split(",");
-                    shop_list.addElement("Κωδικός Καταστήματος: " + values_list[0] + " Όνομα Καταστήματος: " + values_list[1] + " Όροφος: " + values_list[3] + " Περιοχή: " + values_list[4] + " Ενεργό από: " + values_list[6] + " εως: " + values_list[7] + " Κωδικός Mall: " + values_list[2] + " Ονομα Mall: " + values_list[10]);
+                    shop_list.addElement("Κωδικός: " + values_list[0] + " Όνομα: " + values_list[1] + " Κωδικός Mall: " + values_list[2] + " Ονομα Mall: " + values_list[3]);
                 }while (rs.next());
-                javax.swing.JOptionPane.showMessageDialog(null, "The shops has display at tab Shops");
+                javax.swing.JOptionPane.showMessageDialog(null, "The shops has display at tab Shops","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 prepared.close();
-                if_mall_is_selected = true;
             }   
         }catch (SQLException ex){
             System.out.println("---SQL Exception---");
@@ -100,32 +93,47 @@ public class MainFrame extends javax.swing.JFrame {
         
     }
     
-    public void fillShopsList(){
+    private void fillShopsList(){
         DefaultListModel list_model = (DefaultListModel) ShopsList.getModel();
-        Connection conn=null;
-        Statement stmt = null;
-        ResultSet rs=null;
+        Connection conn=startConn();
+        Statement stmt;
+        ResultSet rs;
         
         try{
-            conn=startConn();
-            stmt = conn.createStatement("Select ");
+           stmt = conn.createStatement();
+           rs = stmt.executeQuery("SELECT Fill_shops()");
+           //loop
+           if (rs.next() == false){
+               System.out.print("The resultSet is Empty");
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Shops at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+           }else{
+               do{
+                   String row = rs.getString(1);
+                   row =row.substring(1, row.length()-1);
+                   String[] values=row.split(",");
+                   list_model.addElement("Κωδικός: " + values[0] + " Όνομα: " + values[1] + " Κωδικός Mall: " + values[2]);
+               }while (rs.next());
+               stmt.close();
+               ShopsList.setSelectedIndex(0);
+           }
         }catch (SQLException ex){
             System.out.println("---SQL Exception---");
             System.out.println("Message: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("ErrorCode: " + ex.getErrorCode());  
-            
+            System.out.println("ErrorCode: " + ex.getErrorCode());    
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
         }
-    
-    
-    
-    
-    
+
     }
    
             
     //Μεθοδος γαι το γεμισμα του MallsList        
-    public void fillMallList(){//ArrayList<Mall> lista
+    private void fillMallList(){//ArrayList<Mall> lista
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = startConn();
         Statement stmt;
@@ -137,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
             //loop
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Malls at the database");
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Malls at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 do{
                     String row=rs.getString(1);
@@ -184,6 +192,37 @@ public class MainFrame extends javax.swing.JFrame {
             prepared.executeQuery();
             prepared.close();
             refresh(MallsList);
+            javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }catch (SQLException ex){
+            System.out.println("Message: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("ErrorCode: " + ex.getErrorCode());
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
+        }        
+    }   
+
+
+    public void deleteShop(){
+        DefaultListModel listmodel = (DefaultListModel) ShopsList.getModel();
+        Connection conn = null;
+        PreparedStatement prepared = null;
+        
+        String selected_String =(String)ShopsList.getSelectedValue();
+        String [] selected_array = selected_String.split(" ");
+        int selected_id = Integer.parseInt(selected_array[1]);
+        try{
+            conn = startConn();
+            prepared = conn.prepareStatement("SELECT Delete_Shop(?)");
+            prepared.setInt(1,selected_id);
+            prepared.executeQuery();
+            prepared.close();
+            refresh(ShopsList);
+            javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }catch (SQLException ex){
             System.out.println("Message: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -195,9 +234,7 @@ public class MainFrame extends javax.swing.JFrame {
                 System.out.println(ex);
             }
         }
-
-        
-    }       
+    }
             
             
     public Connection startConn(){
@@ -215,17 +252,17 @@ public class MainFrame extends javax.swing.JFrame {
             dbConnection = DriverManager.getConnection(url, username, passwd);
         }catch (SQLException ex){
             System.out.println("SQL Exception");
-            while (ex != null){
-                System.out.println("Message: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("ErrorCode: " + ex.getErrorCode());
-                ex.getNextException();
-            }
+            System.out.println("Message: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("ErrorCode: " + ex.getErrorCode());
+            javax.swing.JOptionPane.showMessageDialog(null, "Something gone wrong with the connection","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+
         }
+        
         return dbConnection;
     }
    
-    public void WindowAtCenter(JFrame objFrame){
+    private void WindowAtCenter(JFrame objFrame){
         Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
         int iCoordX = (objDimension.width - objFrame.getWidth()) / 2;
         int iCoordY = (objDimension.height - objFrame.getHeight()) / 2;
@@ -234,6 +271,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     //Handler για να διαχειριζεται ολα τα buttons
     public void ACtionPerformed(java.awt.event.ActionEvent e){
+        //MALLS
         if (e.getSource() == InsertMallsButton){
             MallsInsertJF MallsJF = new MallsInsertJF();
             MallsJF.setVisible(true);
@@ -247,8 +285,15 @@ public class MainFrame extends javax.swing.JFrame {
             MallsEditJF EditJF = new MallsEditJF();
             EditJF.inisialize((String)MallsList.getSelectedValue());
             EditJF.setVisible(true);
-            
-        }    
+        //SHOPS
+        }else if(e.getSource() == ShowAllShopsButton){
+            refresh(ShopsList);
+        }else if(e.getSource() == RefreshShopsButton){
+            refresh(ShopsList);
+        }else if(e.getSource() == DeleteShopsButton){
+            deleteShop();
+        }
+
     }
     
     
@@ -256,6 +301,7 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         WindowAtCenter(this);
         fillMallList();
+        fillShopsList();
         enable();
     }
 
@@ -391,7 +437,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(33, 33, 33)
                                 .addComponent(RefreshMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(136, Short.MAX_VALUE))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
         MallsTabLayout.setVerticalGroup(
             MallsTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -407,7 +453,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(RefreshMallsButton)
                     .addComponent(SelectMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(EditMallsButton))
-                .addContainerGap(499, Short.MAX_VALUE))
+                .addContainerGap(473, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Malls ", new javax.swing.ImageIcon(getClass().getResource("/mallsicon.png")), MallsTab, "Here despley all available malls "); // NOI18N
@@ -436,11 +482,21 @@ public class MainFrame extends javax.swing.JFrame {
         DeleteShopsButton.setText("Delete");
         DeleteShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         DeleteShopsButton.setEnabled(false);
+        DeleteShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         RefreshShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         RefreshShopsButton.setText("Refresh");
         RefreshShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         RefreshShopsButton.setEnabled(false);
+        RefreshShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         SelectShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         SelectShopsButton.setText("Select");
@@ -451,6 +507,11 @@ public class MainFrame extends javax.swing.JFrame {
         ShowAllShopsButton.setText("Show All");
         ShowAllShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         ShowAllShopsButton.setEnabled(false);
+        ShowAllShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         EditShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditShopsButton.setText(" Edit");
@@ -481,7 +542,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(SelectShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(41, 41, 41)
                         .addComponent(ShowAllShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
         ShopTabLayout.setVerticalGroup(
             ShopTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -498,7 +559,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(ShowAllShopsButton)
                     .addComponent(EditShopsButton)
                     .addComponent(RefreshShopsButton))
-                .addContainerGap(477, Short.MAX_VALUE))
+                .addContainerGap(451, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Shops", new javax.swing.ImageIcon(getClass().getResource("/shopmini.png")), ShopTab, "The shops of Mall"); // NOI18N
@@ -512,11 +573,11 @@ public class MainFrame extends javax.swing.JFrame {
         ConstantTab.setLayout(ConstantTabLayout);
         ConstantTabLayout.setHorizontalGroup(
             ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 821, Short.MAX_VALUE)
+            .addGap(0, 833, Short.MAX_VALUE)
         );
         ConstantTabLayout.setVerticalGroup(
             ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 811, Short.MAX_VALUE)
+            .addGap(0, 748, Short.MAX_VALUE)
         );
 
         TabbedPane.addTab("Contracts", new javax.swing.ImageIcon(getClass().getResource("/conmono.png")), ConstantTab, "The contract for  specific shop of the mall"); // NOI18N
@@ -526,13 +587,14 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(TabbedPane))
+            .addComponent(TabbedPane, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(TabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         TabbedPane.getAccessibleContext().setAccessibleName("MainTab");
@@ -541,6 +603,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+
+
+
+
+
 
    
     public static void main(String args[]) {

@@ -45,7 +45,7 @@ public class MallsEditJF extends javax.swing.JFrame {
             address = AddressEditMallTF.getText().trim() + " " + Integer.parseInt(AddressNumEditMallTF.getText().trim());
         }catch (Exception e){
             System.out.println("Not a integer");
-            javax.swing.JOptionPane.showMessageDialog(null, "Give a integer!");
+            javax.swing.JOptionPane.showMessageDialog(null, "Give a integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             flag=true;
         }
         if ((name == null) || (address == null)){
@@ -55,7 +55,7 @@ public class MallsEditJF extends javax.swing.JFrame {
         }
         
         if (flag){
-            javax.swing.JOptionPane.showMessageDialog(null, "You give not accepted values!");
+            javax.swing.JOptionPane.showMessageDialog(null, "You give not accepted values!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
                 conn = new MainFrame().startConn();
@@ -65,13 +65,13 @@ public class MallsEditJF extends javax.swing.JFrame {
                 prepared.setString(3, address);
                 prepared.executeQuery();
                 prepared.close();
-                javax.swing.JOptionPane.showMessageDialog(null, "The values has update!");
+                javax.swing.JOptionPane.showMessageDialog(null, "The values has update!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                 System.out.println("---SQL Exception---");
                 System.out.println("Message: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("ErrorCode: " + ex.getErrorCode()); 
-                javax.swing.JOptionPane.showMessageDialog(null, "Something is gone wrong!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Something is gone wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }finally{
                 try{
                     conn.close();
