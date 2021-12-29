@@ -83,8 +83,8 @@ CREATE TABLE public.Shop
     shopping_center_id integer,
     floor integer,
     location character varying(255),
-    active_from character varying(10),
-    active_to character varying(10),
+    active_from character varying(100),
+    active_to character varying(100),
     active boolean,
     contract_id integer,
 	service_type character varying(100),
@@ -97,7 +97,7 @@ CREATE TABLE public.Shop
         REFERENCES public.Shopping_center (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-	CONSTRAINT Shop_check_serviceType CHECK (service_type IN ('food or drink', 'entertaintment', 'retail')) -- PROSWRINO!!!
+	CONSTRAINT Shop_check_serviceType CHECK (service_type IN ('food or drink', 'entertainment', 'retail')) -- PROSWRINO!!!
 );
 
 
@@ -129,7 +129,7 @@ DROP FUNCTION IF EXISTS get_firm_id_name;
 CREATE FUNCTION all_malls() RETURNS SETOF text AS 
 $$ 
 SELECT CONCAT_WS(',', id, name, address) 
-FROM Shopping_center; 
+FROM Shopping_center ORDER BY id; 
 $$ 
 LANGUAGE SQL;
 
@@ -140,7 +140,7 @@ VALUES ($1, $2, $3);
 $$
 LANGUAGE SQL;
 
-CREATE FUNCTION show_stores_of_mall(integer) RETURNS text AS
+CREATE FUNCTION show_stores_of_mall(integer) RETURNS SETOF text AS
 $$
 SELECT CONCAT_WS(',', shop.id, shop.shop_name, shop.shopping_center_id, shop.floor, 
 				 shop.location, shop.active_from, shop.active_to, shop.active, shop.contract_id, 
@@ -148,13 +148,14 @@ SELECT CONCAT_WS(',', shop.id, shop.shop_name, shop.shopping_center_id, shop.flo
 				 FROM shop 
 				 INNER JOIN shopping_center sc 
 				 ON (shop.shopping_center_id = sc.id) 
-				 WHERE shop.shopping_center_id = sc.id AND sc.id = $1;
+				 WHERE shop.shopping_center_id = sc.id AND sc.id = $1
+				 ORDER BY shop.id;
 $$ 
 LANGUAGE SQL;
 
 CREATE FUNCTION get_mall_id_name() RETURNS SETOF text AS
 $$
-SELECT CONCAT_WS(',', id, name) FROM shopping_center;
+SELECT CONCAT_WS(',', id, name) FROM shopping_center ORDER BY id;
 $$
 LANGUAGE SQL;
 
@@ -166,7 +167,7 @@ LANGUAGE SQL;
 
 CREATE FUNCTION edit_mall(integer, character varying, character varying) RETURNS void AS 
 $$
-UPDATE shopping_center SET id = $1, name = $2, address = $3 WHERE id = $1;
+UPDATE shopping_center SET name = $2, address = $3 WHERE id = $1;
 $$
 LANGUAGE SQL;
 
@@ -188,7 +189,7 @@ $$
 SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor, 
 				 location, active_from, active_to, active, contract_id, 
 				 service_type) 
-				 FROM Shop; 
+				 FROM Shop ORDER BY id; 
 $$ 
 LANGUAGE SQL;
 
@@ -203,8 +204,9 @@ CREATE FUNCTION edit_store(integer, character varying, integer,
 						   character varying, boolean, integer, character varying)
 RETURNS void AS 
 $$
-UPDATE shop SET id = $1, shop_name = $2, shopping_center_id = $3, floor = $4, location = $5, 
-				active_from = $6, active_to = $7, active = $8, contract_id = $9, service_type = $10;
+UPDATE shop SET shop_name = $2, shopping_center_id = $3, floor = $4, location = $5, 
+				active_from = $6, active_to = $7, active = $8, contract_id = $9, service_type = $10
+				WHERE id = $1;
 $$
 LANGUAGE SQL;
 
@@ -230,15 +232,16 @@ CREATE FUNCTION edit_aggreement(integer, character varying, character varying,
 								  character varying, integer, character varying)
 RETURNS void AS 
 $$
-UPDATE contract SET id = $1, date_signed = $2, date_active_from = $3, 
+UPDATE contract SET date_signed = $2, date_active_from = $3, 
 					date_active_to = $4, company_id = $5, billing_units = $6
+					WHERE id = $1;
 $$
 LANGUAGE SQL;
 
 CREATE FUNCTION all_aggreements() RETURNS SETOF text AS 
 $$
 SELECT CONCAT_WS(',', id, date_signed, date_active_from, date_active_to, company_id, billing_units)
-FROM contract;
+FROM contract ORDER BY id;
 $$
 LANGUAGE SQL;
 
@@ -247,7 +250,7 @@ LANGUAGE SQL;
 CREATE FUNCTION all_firms() RETURNS SETOF text AS
 $$
 SELECT CONCAT_WS(',', id, name, address, contact_person, contact_email, contact_phone, contact_mobile)
-FROM company;
+FROM company ORDER BY id;
 $$
 LANGUAGE SQL;
 
@@ -272,13 +275,46 @@ CREATE FUNCTION edit_firm(integer, character varying, character varying,
 							character varying, character varying)
 RETURNS void AS
 $$
-UPDATE company SET id = $1, name = $2, address = $3, contact_person = $4, 
-				   contact_email = $5, contact_phone = $6, contact_mobile = $7;
+UPDATE company SET name = $2, address = $3, contact_person = $4, 
+				   contact_email = $5, contact_phone = $6, contact_mobile = $7
+				   WHERE id = $1;
 $$
 LANGUAGE SQL;
 
 CREATE FUNCTION get_firm_id_name() RETURNS SETOF text AS
 $$
-SELECT CONCAT_WS(',', id, name) FROM company;
+SELECT CONCAT_WS(',', id, name) FROM company ORDER BY id;
 $$
 LANGUAGE SQL;
+
+
+-- Data
+
+-- Shopping centers
+SELECT insert_mall(1, 'Mediterranean Cosmos', '11th km National Road Thessaloniki-N.Moudania, 57001, Thessaloniki');
+SELECT insert_mall(2, 'One Salonica', 'Kotta Roulia 10, 546 27, Thessaloniki');
+SELECT insert_mall(3, 'The Mall Athens', 'Andrea Papandreou 35, 15122, Marousi ');
+
+-- Companies
+SELECT insert_firm(9, 'Adidas', 'Tsimiski 47, 54623, Thessaloniki', 
+				   'Georgios Georgiou', 'adidasgr@adidassupport.gr',
+				   '2310435422', '6943345305');
+SELECT insert_firm(4, 'Crocs', 'Egnatia 55, 54624, Thessaloniki',
+				   'Iraklis Konsoulas', 'crocsgr@crocssupport.gr',
+				   '23104433421', '6942072096');
+SELECT insert_firm(22, 'Goodys', 'Leoforos Nikis 11, 54624, Thessaloniki',
+				   'Athanasios Tzimas', 'getgood@goodys.gr',
+				   '23109394839', '6923454321');
+SELECT insert_firm(102, 'Village Cinemas', 'Mitropoleos 101, 54622, Thessaloniki',
+				   'Ioannis Kontos', 'cine@villagesupport.gr',
+				   '23102309390', '6943985487');
+-- Contracts
+SELECT insert_aggreement(10, '19/11/2018', '22/10/2019', '04/11/2020', 102, 'monthly');
+SELECT insert_aggreement(22, '22/09/2009', '01/02/2010', '05/03/2020', 22, 'yearly');
+SELECT insert_aggreement(3, '01/02/2020', '14/03/2020', '31/12/2021', 4, 'weekly');
+SELECT insert_aggreement(99, '11/12/2015', '23/01/2016', '30/05/2025', 9, 'yearly');
+-- Shops
+SELECT insert_store(5, 'Adidas Cosmos 2A', 1, 2, 'A', 'Friday', 'Sunday', true, 99, 'retail');
+SELECT insert_store(32, 'Crocs One Salonica 1C', 2, 1, 'C', 'Monday', 'Saturday', true, 3, 'retail');
+SELECT insert_store(2, 'Goodys Mall Athens 3F', 3, 3, 'F', 'Tuesday', 'Sunday', false, 22, 'food or drink');
+SELECT insert_store(9, 'Village Cinemas Cosmos 0A', 1, 0, 'A', 'Monday', 'Sunday', false, 10, 'entertainment');
