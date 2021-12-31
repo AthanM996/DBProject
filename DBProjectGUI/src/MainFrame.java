@@ -8,16 +8,30 @@ import javax.swing.DefaultListModel;
 
 public class MainFrame extends javax.swing.JFrame {
     
+    
+    
+    public Connection StartConn(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn = null;
+        
+        try{
+            conn= DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+             System.out.println("Message: " + ex.getMessage());
+             System.out.println("SQLState: " + ex.getSQLState());
+             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
+        return conn;
+    }
 
    
     
     
     //Μεθοδος για την εμφανιση των μαγαζιων του επιλεγμενου Mall
     public void selectMalls(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         DefaultListModel shop_list = (DefaultListModel) ShopsList.getModel();
         Connection conn=null;
         PreparedStatement prepared = null;
@@ -27,7 +41,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             prepared = conn.prepareStatement("SELECT Select_Mall(?)");
             prepared.setInt(1, selected_id);
             rs=prepared.executeQuery();
@@ -80,16 +94,12 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void fillShopsList(){
         DefaultListModel list_model = (DefaultListModel) ShopsList.getModel();
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         Connection conn=null;
         Statement stmt;
         ResultSet rs;
         
         try{
-           conn = DriverManager.getConnection(url, username, passwd);
+           conn = StartConn();
            stmt = conn.createStatement();
            rs = stmt.executeQuery("SELECT Fill_shops()");
            //loop
@@ -124,17 +134,13 @@ public class MainFrame extends javax.swing.JFrame {
             
     //Μεθοδος γαι το γεμισμα του MallsList        
     private void fillMallList(){//ArrayList<Mall> lista
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = null;
         Statement stmt;
         ResultSet rs;      
         //Θα καλειτε ενα function γαι να τραβηξει ολες τις τιμες του πινακα Shopping_center και να τις εισαγει στην λιστα list_Of_Malls
         try {
-            conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT Fill_Malls_List()");
             //loop
@@ -172,10 +178,6 @@ public class MainFrame extends javax.swing.JFrame {
     /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
     απο την λιστα MallsList */      
     public void  deleteValueFromMallsList(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -184,7 +186,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             prepared = conn.prepareStatement("SELECT Delete_Mall(?)");
             prepared.setInt(1,selected_id);
             prepared.executeQuery();
@@ -206,10 +208,6 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     public void deleteShop(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) ShopsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -218,7 +216,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             prepared = conn.prepareStatement("SELECT Delete_Shop(?)");
             prepared.setInt(1,selected_id);
             prepared.executeQuery();

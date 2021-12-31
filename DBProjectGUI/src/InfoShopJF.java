@@ -16,6 +16,25 @@ import java.sql.*;
 public class InfoShopJF extends javax.swing.JFrame {
 
     
+    public Connection StartConn(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn = null;
+        
+        try{
+            conn= DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+             System.out.println("Message: " + ex.getMessage());
+             System.out.println("SQLState: " + ex.getSQLState());
+             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
+        return conn;
+    }
+    
+    
+    
     private void WindowAtCenter(JFrame objFrame){
         Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
         int iCoordX = (objDimension.width - objFrame.getWidth()) / 2;
@@ -24,10 +43,6 @@ public class InfoShopJF extends javax.swing.JFrame {
     }
     
     public void inisialize(String value){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         Connection conn = null;
         PreparedStatement prepared = null;
         ResultSet rs = null;
@@ -36,7 +51,7 @@ public class InfoShopJF extends javax.swing.JFrame {
         int id = Integer.parseInt(list_values[1]);
       
         try{
-            conn = conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             prepared = conn.prepareStatement("SELECT Info_Shop(?)");
             prepared.setInt(1, id);
             rs = prepared.executeQuery();

@@ -6,6 +6,24 @@ import java.sql.*;
 
 public class MallsInsertJF extends javax.swing.JFrame {
 
+    
+    
+    public Connection StartConn(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn = null;
+        
+        try{
+            conn= DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+             System.out.println("Message: " + ex.getMessage());
+             System.out.println("SQLState: " + ex.getSQLState());
+             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
+        return conn;
+    }
 
 
     //Handler για να διαχειριζεται ολα τα buttons
@@ -20,10 +38,6 @@ public class MallsInsertJF extends javax.swing.JFrame {
 
     //Μεθοδο για την Εισαγωγή των στοιχειων στην βαση
     public void submit(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         MainFrame mf = new MainFrame();
         Connection conn = null;
         PreparedStatement prepared;
@@ -89,7 +103,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
             }else{
                 //Δημιουργια συνδεσης
                 try{
-                    conn = DriverManager.getConnection(url, username, passwd);
+                    conn = StartConn();
                     prepared = conn.prepareStatement("SELECT Submit_New_Mall(?,?,?)");
                     prepared.setInt(1,mallCode);
                     prepared.setString(2, mallName);

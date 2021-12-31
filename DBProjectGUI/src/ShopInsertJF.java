@@ -18,7 +18,27 @@ import java.util.regex.Pattern;
 public class ShopInsertJF extends javax.swing.JFrame {
 
     
-      private void WindowAtCenter(JFrame objFrame){
+    
+    public Connection StartConn(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn = null;
+        
+        try{
+            conn= DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+             System.out.println("Message: " + ex.getMessage());
+             System.out.println("SQLState: " + ex.getSQLState());
+             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
+        return conn;
+    }
+    
+    
+    
+    private void WindowAtCenter(JFrame objFrame){
         Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
         int iCoordX = (objDimension.width - objFrame.getWidth()) / 2;
         int iCoordY = (objDimension.height - objFrame.getHeight()) / 2;
@@ -63,10 +83,6 @@ public class ShopInsertJF extends javax.swing.JFrame {
         
         
         boolean flag = false;
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         Connection conn = null;
         Statement stmt_MallID = null;
         Statement stmt_ContractID = null;
@@ -76,7 +92,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
         ResultSet rs_serviceType = null;
         
         try{
-            conn = conn = DriverManager.getConnection(url, username, passwd);
+            conn = StartConn();
             stmt_MallID = conn.createStatement();
             rs_MallID = stmt_MallID.executeQuery("SELECT Select_Mall_id()");
             if (rs_MallID.next() == false){

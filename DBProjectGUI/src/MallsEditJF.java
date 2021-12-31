@@ -19,6 +19,24 @@ public class MallsEditJF extends javax.swing.JFrame {
             
 
     
+    
+    public Connection StartConn(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn = null;
+        
+        try{
+            conn= DriverManager.getConnection(url, username, passwd);
+        }catch (SQLException ex){
+             System.out.println("Message: " + ex.getMessage());
+             System.out.println("SQLState: " + ex.getSQLState());
+             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
+        return conn;
+    }
+    
     //Handler για να διαχειριζεται ολα τα buttons
     public void ACtionPerformed(java.awt.event.ActionEvent e){
             if (e.getSource() == ClearEditMall){
@@ -30,10 +48,6 @@ public class MallsEditJF extends javax.swing.JFrame {
     }
     
     public void submit(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        String     username = "postgres";
-        String     passwd = "147896325!";
         Connection conn=null;
         PreparedStatement prepared = null;
         String name=null;
@@ -64,7 +78,7 @@ public class MallsEditJF extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(null, "You give not accepted values!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
-                conn = DriverManager.getConnection(url, username, passwd);
+                conn = StartConn();
                 prepared = conn.prepareStatement("SELECT edit_mall(?,?,?)");
                 prepared.setInt(1,id);
                 prepared.setString(2, name);
