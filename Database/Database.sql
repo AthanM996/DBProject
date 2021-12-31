@@ -113,6 +113,7 @@ DROP FUNCTION IF EXISTS all_stores;
 DROP FUNCTION IF EXISTS insert_store;
 DROP FUNCTION IF EXISTS delete_store;
 DROP FUNCTION IF EXISTS edit_store;
+DROP FUNCTION IF EXISTS get_store_constraints;
 
 DROP FUNCTION IF EXISTS insert_aggreement;
 DROP FUNCTION IF EXISTS delete_aggreement;
@@ -207,6 +208,16 @@ $$
 UPDATE shop SET shop_name = $2, shopping_center_id = $3, floor = $4, location = $5, 
 				active_from = $6, active_to = $7, active = $8, contract_id = $9, service_type = $10
 				WHERE id = $1;
+$$
+LANGUAGE SQL;
+
+CREATE FUNCTION get_store_constraints() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.shop'::regclass  
+	  AND    conname = 'shop_check_servicetype';
 $$
 LANGUAGE SQL;
 
