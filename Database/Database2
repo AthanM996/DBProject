@@ -134,6 +134,9 @@ DROP FUNCTION IF EXISTS Select_Mall_id;
 DROP FUNCTION IF EXISTS Select_ServiceType;
 DROP FUNCTION IF EXISTS Select_ContractID;
 
+DROP FUNCTION IF EXISTS get_store_constraints;
+
+
 -- Shopping_center
 
 CREATE FUNCTION Select_Mall_id() RETURNS SETOF TEXT 
@@ -338,6 +341,24 @@ $$
 SELECT CONCAT_WS(',', id, name) FROM company ORDER BY id;
 $$
 LANGUAGE SQL;
+
+
+--CONSTRAINT
+
+CREATE FUNCTION get_store_constraints() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.shop'::regclass  
+	  AND    conname = 'shop_check_servicetype';
+$$
+LANGUAGE SQL;
+
+
+
+
+
 
 
 -- Data
