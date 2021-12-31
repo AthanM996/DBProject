@@ -9,30 +9,15 @@ import javax.swing.DefaultListModel;
 public class MainFrame extends javax.swing.JFrame {
     
 
-    //Μεθοδος για την ενεργοποιηση των buttons 
-    public final void enable(){
-        if(MallsList.getModel().getSize()>0){
-            //Mall
-            RefreshMallsButton.setEnabled(true);
-            InsertMallsButton.setEnabled(true);
-            DeleteMallsButton.setEnabled(true);
-            EditMallsButton.setEnabled(true);
-            SelectMallsButton.setEnabled(true);
-        }
-        if (ShopsList.getModel().getSize()>0){
-            //Shop
-            DeleteShopsButton.setEnabled(true);
-            EditShopsButton.setEnabled(true);
-            InsertShopsButton.setEnabled(true);
-            RefreshShopsButton.setEnabled(true);
-            SelectShopsButton.setEnabled(true);
-            ShowAllShopsButton.setEnabled(true);
-        }
-    }
+   
     
     
     //Μεθοδος για την εμφανιση των μαγαζιων του επιλεγμενου Mall
     public void selectMalls(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         DefaultListModel shop_list = (DefaultListModel) ShopsList.getModel();
         Connection conn=null;
         PreparedStatement prepared = null;
@@ -42,7 +27,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = startConn();
+            conn = DriverManager.getConnection(url, username, passwd);
             prepared = conn.prepareStatement("SELECT Select_Mall(?)");
             prepared.setInt(1, selected_id);
             rs=prepared.executeQuery();
@@ -95,11 +80,16 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void fillShopsList(){
         DefaultListModel list_model = (DefaultListModel) ShopsList.getModel();
-        Connection conn=startConn();
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
+        Connection conn=null;
         Statement stmt;
         ResultSet rs;
         
         try{
+           conn = DriverManager.getConnection(url, username, passwd);
            stmt = conn.createStatement();
            rs = stmt.executeQuery("SELECT Fill_shops()");
            //loop
@@ -134,12 +124,17 @@ public class MainFrame extends javax.swing.JFrame {
             
     //Μεθοδος γαι το γεμισμα του MallsList        
     private void fillMallList(){//ArrayList<Mall> lista
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
-        Connection conn = startConn();
+        Connection conn = null;
         Statement stmt;
         ResultSet rs;      
         //Θα καλειτε ενα function γαι να τραβηξει ολες τις τιμες του πινακα Shopping_center και να τις εισαγει στην λιστα list_Of_Malls
         try {
+            conn = DriverManager.getConnection(url, username, passwd);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT Fill_Malls_List()");
             //loop
@@ -150,9 +145,8 @@ public class MainFrame extends javax.swing.JFrame {
                 do{
                     String row=rs.getString(1);
                     row =row.substring(1, row.length()-1);
-                    String[] values=row.split(",");
-                    String address = values[2];
-                    listmodel.addElement("Κωδικός: " + values[0] + " Οναμα: " + values[1] + " Διευθυνση: " + address.substring(1, address.length()-1));
+                    String[] values=row.split(",");               
+                    listmodel.addElement("Κωδικός: " + values[0] + " Οναμα: " + values[1] + " Διευθυνση: " + values[2].substring(1, values[2].length()) + " ΤK: " + values[3] + " Πολη: " + values[4].substring(0,values[4].length()-1));
                 }while (rs.next());
             }
             stmt.close();
@@ -178,6 +172,10 @@ public class MainFrame extends javax.swing.JFrame {
     /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
     απο την λιστα MallsList */      
     public void  deleteValueFromMallsList(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -186,7 +184,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = startConn();
+            conn = DriverManager.getConnection(url, username, passwd);
             prepared = conn.prepareStatement("SELECT Delete_Mall(?)");
             prepared.setInt(1,selected_id);
             prepared.executeQuery();
@@ -208,6 +206,10 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     public void deleteShop(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         DefaultListModel listmodel = (DefaultListModel) ShopsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -216,7 +218,7 @@ public class MainFrame extends javax.swing.JFrame {
         String [] selected_array = selected_String.split(" ");
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
-            conn = startConn();
+            conn = DriverManager.getConnection(url, username, passwd);
             prepared = conn.prepareStatement("SELECT Delete_Shop(?)");
             prepared.setInt(1,selected_id);
             prepared.executeQuery();
@@ -237,30 +239,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
             
             
-    public Connection startConn(){
-        String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
-        Connection dbConnection = null;
-        String     username = "postgres";
-        String     passwd = "147896325!";
-        try{
-            Class.forName(driverClassName);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        try{
-            dbConnection = DriverManager.getConnection(url, username, passwd);
-        }catch (SQLException ex){
-            System.out.println("SQL Exception");
-            System.out.println("Message: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("ErrorCode: " + ex.getErrorCode());
-            javax.swing.JOptionPane.showMessageDialog(null, "Something gone wrong with the connection","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
 
-        }
-        
-        return dbConnection;
-    }
    
     private void WindowAtCenter(JFrame objFrame){
         Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -292,6 +271,14 @@ public class MainFrame extends javax.swing.JFrame {
             refresh(ShopsList);
         }else if(e.getSource() == DeleteShopsButton){
             deleteShop();
+        }else if(e.getSource() == InfoShopsButton){
+            InfoShopJF info_shop = new InfoShopJF();
+            info_shop.inisialize(ShopsList.getSelectedValue());
+            info_shop.setVisible(true);
+        }else if(e.getSource() == InsertShopsButton){
+            System.out.print("press");
+           ShopInsertJF aa = new ShopInsertJF();
+           aa.setVisible(true);
         }
 
     }
@@ -302,7 +289,6 @@ public class MainFrame extends javax.swing.JFrame {
         WindowAtCenter(this);
         fillMallList();
         fillShopsList();
-        enable();
     }
 
     @SuppressWarnings("unchecked")
@@ -326,7 +312,7 @@ public class MainFrame extends javax.swing.JFrame {
         InsertShopsButton = new javax.swing.JButton();
         DeleteShopsButton = new javax.swing.JButton();
         RefreshShopsButton = new javax.swing.JButton();
-        SelectShopsButton = new javax.swing.JButton();
+        InfoShopsButton = new javax.swing.JButton();
         ShowAllShopsButton = new javax.swing.JButton();
         EditShopsButton = new javax.swing.JButton();
         ConstantTab = new javax.swing.JPanel();
@@ -365,7 +351,6 @@ public class MainFrame extends javax.swing.JFrame {
         InsertMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         InsertMallsButton.setText("Insert");
         InsertMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        InsertMallsButton.setEnabled(false);
         InsertMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -375,7 +360,6 @@ public class MainFrame extends javax.swing.JFrame {
         DeleteMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         DeleteMallsButton.setText("Delete");
         DeleteMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        DeleteMallsButton.setEnabled(false);
         DeleteMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -385,7 +369,6 @@ public class MainFrame extends javax.swing.JFrame {
         SelectMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         SelectMallsButton.setText("Select");
         SelectMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        SelectMallsButton.setEnabled(false);
         SelectMallsButton.setMaximumSize(new java.awt.Dimension(65, 25));
         SelectMallsButton.setMinimumSize(new java.awt.Dimension(65, 25));
         SelectMallsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -397,7 +380,6 @@ public class MainFrame extends javax.swing.JFrame {
         RefreshMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         RefreshMallsButton.setText("Refresh");
         RefreshMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        RefreshMallsButton.setEnabled(false);
         RefreshMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -407,7 +389,6 @@ public class MainFrame extends javax.swing.JFrame {
         EditMallsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditMallsButton.setText("Edit");
         EditMallsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        EditMallsButton.setEnabled(false);
         EditMallsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -453,7 +434,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(RefreshMallsButton)
                     .addComponent(SelectMallsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(EditMallsButton))
-                .addContainerGap(473, Short.MAX_VALUE))
+                .addContainerGap(499, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Malls ", new javax.swing.ImageIcon(getClass().getResource("/mallsicon.png")), MallsTab, "Here despley all available malls "); // NOI18N
@@ -476,12 +457,15 @@ public class MainFrame extends javax.swing.JFrame {
         InsertShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         InsertShopsButton.setText("Insert");
         InsertShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        InsertShopsButton.setEnabled(false);
+        InsertShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         DeleteShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         DeleteShopsButton.setText("Delete");
         DeleteShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        DeleteShopsButton.setEnabled(false);
         DeleteShopsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -491,22 +475,24 @@ public class MainFrame extends javax.swing.JFrame {
         RefreshShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         RefreshShopsButton.setText("Refresh");
         RefreshShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        RefreshShopsButton.setEnabled(false);
         RefreshShopsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
             }
         });
 
-        SelectShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        SelectShopsButton.setText("Select");
-        SelectShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        SelectShopsButton.setEnabled(false);
+        InfoShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        InfoShopsButton.setText("Info");
+        InfoShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        InfoShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         ShowAllShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         ShowAllShopsButton.setText("Show All");
         ShowAllShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        ShowAllShopsButton.setEnabled(false);
         ShowAllShopsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ACtionPerformed(evt);
@@ -516,7 +502,6 @@ public class MainFrame extends javax.swing.JFrame {
         EditShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditShopsButton.setText(" Edit");
         EditShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        EditShopsButton.setEnabled(false);
 
         javax.swing.GroupLayout ShopTabLayout = new javax.swing.GroupLayout(ShopTab);
         ShopTab.setLayout(ShopTabLayout);
@@ -539,7 +524,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(42, 42, 42)
                         .addComponent(RefreshShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(33, 33, 33)
-                        .addComponent(SelectShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(InfoShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(41, 41, 41)
                         .addComponent(ShowAllShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(74, Short.MAX_VALUE))
@@ -555,11 +540,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(ShopTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InsertShopsButton)
                     .addComponent(DeleteShopsButton)
-                    .addComponent(SelectShopsButton)
+                    .addComponent(InfoShopsButton)
                     .addComponent(ShowAllShopsButton)
                     .addComponent(EditShopsButton)
                     .addComponent(RefreshShopsButton))
-                .addContainerGap(451, Short.MAX_VALUE))
+                .addContainerGap(477, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Shops", new javax.swing.ImageIcon(getClass().getResource("/shopmini.png")), ShopTab, "The shops of Mall"); // NOI18N
@@ -577,7 +562,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         ConstantTabLayout.setVerticalGroup(
             ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 748, Short.MAX_VALUE)
+            .addGap(0, 774, Short.MAX_VALUE)
         );
 
         TabbedPane.addTab("Contracts", new javax.swing.ImageIcon(getClass().getResource("/conmono.png")), ConstantTab, "The contract for  specific shop of the mall"); // NOI18N
@@ -587,14 +572,11 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(TabbedPane, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(TabbedPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(TabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addComponent(TabbedPane, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         TabbedPane.getAccessibleContext().setAccessibleName("MainTab");
@@ -603,6 +585,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+
+
 
 
 
@@ -649,6 +634,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton DeleteShopsButton;
     private javax.swing.JButton EditMallsButton;
     private javax.swing.JButton EditShopsButton;
+    private javax.swing.JButton InfoShopsButton;
     private javax.swing.JButton InsertMallsButton;
     private javax.swing.JButton InsertShopsButton;
     private javax.swing.JList MallsList;
@@ -656,7 +642,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton RefreshMallsButton;
     private javax.swing.JButton RefreshShopsButton;
     private javax.swing.JButton SelectMallsButton;
-    private javax.swing.JButton SelectShopsButton;
     private javax.swing.JPanel ShopTab;
     private javax.swing.JList<String> ShopsList;
     private javax.swing.JButton ShowAllShopsButton;

@@ -20,6 +20,10 @@ public class MallsInsertJF extends javax.swing.JFrame {
 
     //Μεθοδο για την Εισαγωγή των στοιχειων στην βαση
     public void submit(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         MainFrame mf = new MainFrame();
         Connection conn = null;
         PreparedStatement prepared;
@@ -27,10 +31,11 @@ public class MallsInsertJF extends javax.swing.JFrame {
         String mallName,mallAddress = null;
         int mallCode = 0;
         boolean error = false;
+        int tk=-1;
         
         int addressNum;
         //Ελεγχος για αμα εχουν συμπληρωθει ολα τα πεδια 
-        if ((newMallAdressNumTF.getText().isBlank()) || (newMallAdressTF.getText().isBlank()) || (newMallNameTF.getText().isBlank()) ||  (newMallCodeTF.getText().isBlank())){
+        if ((newMallAdressNumTF.getText().isBlank()) || (newMallAdressTF.getText().isBlank()) || (newMallNameTF.getText().isBlank()) ||  (newMallCodeTF.getText().isBlank()) || (newMallTKTF.getText().isBlank()) || (newMallTownTF.getText().isBlank())){
            javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         //Προετοιμασια του address για να περασει στην βαση
         }else{
@@ -62,6 +67,19 @@ public class MallsInsertJF extends javax.swing.JFrame {
                 javax.swing.JOptionPane.showMessageDialog(null, "Please enter Address Number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 error = true;
             }
+            try{
+                 tk = Integer.parseInt(newMallTKTF.getText().trim());
+                 if (newMallTKTF.getText().trim().length()!=5){
+                     javax.swing.JOptionPane.showMessageDialog(null, "Please enter a postal code at correct format!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                     error=true;
+                 }else{
+                     mallAddress = mallAddress + ", " + tk + ", " + newMallTownTF.getText().trim();
+                 }
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error = true;
+            }
+            
             
             
             //Ελεγχος για αμα πηγε κατι στραβα
@@ -70,8 +88,8 @@ public class MallsInsertJF extends javax.swing.JFrame {
                 javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 //Δημιουργια συνδεσης
-                conn = mf.startConn();
                 try{
+                    conn = DriverManager.getConnection(url, username, passwd);
                     prepared = conn.prepareStatement("SELECT Submit_New_Mall(?,?,?)");
                     prepared.setInt(1,mallCode);
                     prepared.setString(2, mallName);
@@ -113,6 +131,8 @@ public class MallsInsertJF extends javax.swing.JFrame {
         newMallAdressTF.setText("");      
         newMallNameTF.setText("");   
         newMallCodeTF.setText("");
+        newMallTownTF.setText("");
+        newMallTKTF.setText("");
     }
 
         
@@ -153,6 +173,10 @@ public class MallsInsertJF extends javax.swing.JFrame {
         newMallClearButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         newMallCodeTF = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        newMallTKTF = new javax.swing.JTextField();
+        newMallTownTF = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -204,6 +228,16 @@ public class MallsInsertJF extends javax.swing.JFrame {
 
         newMallCodeTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
+        jLabel6.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel6.setText("TK: ");
+
+        jLabel7.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel7.setText("Πολη: ");
+
+        newMallTKTF.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
+        newMallTownTF.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -220,20 +254,24 @@ public class MallsInsertJF extends javax.swing.JFrame {
                                 .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jLabel5))
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7))
                         .addGap(59, 59, 59)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(newMallAdressTF, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
                             .addComponent(newMallAdressNumTF)
                             .addComponent(newMallNameTF)
-                            .addComponent(newMallCodeTF))))
+                            .addComponent(newMallCodeTF)
+                            .addComponent(newMallTKTF)
+                            .addComponent(newMallTownTF))))
                 .addContainerGap(225, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(newMallClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41)
+                .addGap(54, 54, 54)
                 .addComponent(newMallSubmitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(52, 52, 52))
+                .addGap(39, 39, 39))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -244,19 +282,27 @@ public class MallsInsertJF extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(newMallNameTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addGap(50, 50, 50)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(newMallCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addGap(60, 60, 60)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newMallAdressTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(44, 44, 44)
+                    .addComponent(jLabel3)
+                    .addComponent(newMallAdressTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(68, 68, 68)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(newMallAdressNumTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                .addGap(54, 54, 54)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(newMallTKTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(newMallTownTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(newMallClearButton)
                     .addComponent(newMallSubmitButton))
@@ -273,9 +319,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -296,6 +340,8 @@ public class MallsInsertJF extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField newMallAdressNumTF;
     private javax.swing.JTextField newMallAdressTF;
@@ -303,5 +349,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
     private javax.swing.JTextField newMallCodeTF;
     private javax.swing.JTextField newMallNameTF;
     private javax.swing.JButton newMallSubmitButton;
+    private javax.swing.JTextField newMallTKTF;
+    private javax.swing.JTextField newMallTownTF;
     // End of variables declaration//GEN-END:variables
 }

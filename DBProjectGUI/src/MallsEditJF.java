@@ -2,6 +2,8 @@
 import java.sql.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
 
 /*
@@ -28,6 +30,10 @@ public class MallsEditJF extends javax.swing.JFrame {
     }
     
     public void submit(){
+        String     driverClassName = "org.postgresql.Driver" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     username = "postgres";
+        String     passwd = "147896325!";
         Connection conn=null;
         PreparedStatement prepared = null;
         String name=null;
@@ -42,7 +48,7 @@ public class MallsEditJF extends javax.swing.JFrame {
         }
         name = MallNameEditMallsTF.getText().trim();
         try{
-            address = AddressEditMallTF.getText().trim() + " " + Integer.parseInt(AddressNumEditMallTF.getText().trim());
+            address = AddressEditMallTF.getText().trim() + " " + Integer.parseInt(AddressNumEditMallTF.getText().trim()) + ", " + Integer.parseInt(TKEditMallTF.getText().trim()) + ", " + TownEditMallTF.getText();
         }catch (Exception e){
             System.out.println("Not a integer");
             javax.swing.JOptionPane.showMessageDialog(null, "Give a integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -50,7 +56,7 @@ public class MallsEditJF extends javax.swing.JFrame {
         }
         if ((name == null) || (address == null)){
             flag=true;
-        }else if ((name.isBlank()) || (address.isBlank())){
+        }else if ((MallNameEditMallsTF.getText().isBlank()) || (AddressEditMallTF.getText().isBlank()) || (AddressNumEditMallTF.getText().isBlank()) || (TKEditMallTF.getText().isBlank()) || (TownEditMallTF.getText().isBlank())){
             flag=true;
         }
         
@@ -58,7 +64,7 @@ public class MallsEditJF extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(null, "You give not accepted values!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
-                conn = new MainFrame().startConn();
+                conn = DriverManager.getConnection(url, username, passwd);
                 prepared = conn.prepareStatement("SELECT edit_mall(?,?,?)");
                 prepared.setInt(1,id);
                 prepared.setString(2, name);
@@ -90,12 +96,26 @@ public class MallsEditJF extends javax.swing.JFrame {
     
     //Εκχωρει μεσα στα componets της ειδη εχκχρημενες τιμες του Mall
     public void inisialize(String value){
-        String [] selected_list = value.split(" ");
-        TitleLabelEditMalls.setText("This is the Mall with code " + selected_list[1]);
-        MallNameEditMallsTF.setText(selected_list[3]);
-        AddressEditMallTF.setText(selected_list[5]);
-        AddressNumEditMallTF.setText(selected_list[6]);
-        
+        String [] selected_list = value.split(":");
+        String addressnum="";
+        String tk=null;
+        TitleLabelEditMalls.setText("This is the Mall with code " + selected_list[1].trim().substring(0,selected_list[1].trim().length()-6));
+        MallNameEditMallsTF.setText(selected_list[2].trim().substring(0,selected_list[2].trim().length()-10));
+        Pattern pattern = Pattern.compile("([1-9][0-9]{0,2})");
+        Matcher matcher = pattern.matcher(selected_list[3].trim());
+        if (matcher.find()){
+           addressnum = matcher.group(1);
+        }
+        AddressNumEditMallTF.setText(addressnum);
+        AddressEditMallTF.setText(selected_list[3].trim().substring(0,selected_list[3].trim().length()-addressnum.length()-4));
+        Pattern pattern2 = Pattern.compile("([1-9][0-9]{0,4})");
+        Matcher matcher2 = pattern2.matcher(selected_list[4].trim());
+        if (matcher2.find()){
+           tk = matcher2.group(1);
+        }
+        TKEditMallTF.setText(tk);
+        TownEditMallTF.setText(selected_list[5].trim());
+//        
     }
     
     //Εκαθαριση των TextFields 
@@ -142,6 +162,10 @@ public class MallsEditJF extends javax.swing.JFrame {
         ClearEditMall = new javax.swing.JButton();
         AddressNumEditMall = new javax.swing.JLabel();
         AddressNumEditMallTF = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        TKEditMallTF = new javax.swing.JTextField();
+        TownEditMallTF = new javax.swing.JTextField();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -186,39 +210,54 @@ public class MallsEditJF extends javax.swing.JFrame {
 
         AddressNumEditMallTF.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
+        jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel1.setText("TK: ");
+
+        jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel2.setText("Town: ");
+
+        TKEditMallTF.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
+        TownEditMallTF.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 234, Short.MAX_VALUE)
+                .addComponent(TitleLabelEditMalls, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(142, 142, 142))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ClearEditMall, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(SubmitEditMall, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(89, 89, 89)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(AddressNumEditMall)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(AddressNumEditMall)
+                            .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addComponent(AddressNumEditMallTF, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(TKEditMallTF)
+                            .addComponent(TownEditMallTF, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(AddressNumEditMallTF)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(AddressEditMall, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
                                 .addGap(22, 22, 22))
                             .addComponent(MallNameEditMall, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(AddressEditMallTF)
+                        .addGap(46, 46, 46)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(AddressEditMallTF, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                             .addComponent(MallNameEditMallsTF))))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 150, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(ClearEditMall, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(51, 51, 51)
-                        .addComponent(SubmitEditMall, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(TitleLabelEditMalls, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(142, 142, 142))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -237,18 +276,28 @@ public class MallsEditJF extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(AddressNumEditMall)
                     .addComponent(AddressNumEditMallTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
+                .addGap(41, 41, 41)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(TKEditMallTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(TownEditMallTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(32, 32, 32)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(SubmitEditMall)
                     .addComponent(ClearEditMall))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addGap(23, 23, 23))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -306,7 +355,11 @@ public class MallsEditJF extends javax.swing.JFrame {
     private javax.swing.JLabel MallNameEditMall;
     private javax.swing.JTextField MallNameEditMallsTF;
     private javax.swing.JButton SubmitEditMall;
+    private javax.swing.JTextField TKEditMallTF;
     private javax.swing.JLabel TitleLabelEditMalls;
+    private javax.swing.JTextField TownEditMallTF;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;

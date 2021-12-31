@@ -97,7 +97,11 @@ CREATE TABLE public.Shop
         REFERENCES public.Shopping_center (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-	CONSTRAINT Shop_check_serviceType CHECK (service_type IN ('food or drink', 'entertainment', 'retail')) -- PROSWRINO!!!
+	CONSTRAINT Shop_check_serviceType CHECK (service_type IN ('food or drink', 'entertainment', 'retail')), -- PROSWRINO!!!
+	CONSTRAINT Shop_check_activeFrom CHECK (active_from IN ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')),
+	CONSTRAINT Shop_check_activeTo CHECK (active_to IN ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')),
+	CONSTRAINT Shop_check_active CHECK (active IN ('Yes','No'))
+	
 );
 
 
@@ -108,6 +112,8 @@ DROP FUNCTION IF EXISTS show_stores_of_mall;
 DROP FUNCTION IF EXISTS delete_mall;
 DROP FUNCTION IF EXISTS edit_mall;
 DROP FUNCTION IF EXISTS get_mall_id_name;
+DROP FUNCTION IF EXISTS Submit_New_Mall;
+DROP FUNCTION IF EXISTS Delete_Shop;
 
 DROP FUNCTION IF EXISTS all_stores;
 DROP FUNCTION IF EXISTS insert_store;
@@ -124,8 +130,22 @@ DROP FUNCTION IF EXISTS insert_firm;
 DROP FUNCTION IF EXISTS delete_firm;
 DROP FUNCTION IF EXISTS edit_firm;
 DROP FUNCTION IF EXISTS get_firm_id_name;
+DROP FUNCTION IF EXISTS Select_Mall_id;
+DROP FUNCTION IF EXISTS Select_ServiceType;
+DROP FUNCTION IF EXISTS Select_ContractID;
 
 -- Shopping_center
+
+CREATE FUNCTION Select_Mall_id() RETURNS SETOF TEXT 
+AS $$
+SELECT DISTINCT(id) 
+FROM shopping_center;
+$$ 
+LANGUAGE SQL;
+
+
+
+
 CREATE FUNCTION Fill_Malls_List() RETURNS SETOF Shopping_center AS 
 $$ 
 SELECT * 
@@ -169,6 +189,13 @@ $$
 LANGUAGE SQL;
 
 -- Shop
+
+CREATE FUNCTION Select_ServiceType() RETURNS SETOF text 
+AS $$
+SELECT DISTINCT(service_type) 
+FROM Shop;
+$$ 
+LANGUAGE SQL;
 
 CREATE FUNCTION insert_store(integer, character varying, integer, 
 							 integer, character varying, character varying, 
@@ -216,7 +243,27 @@ $$
 LANGUAGE SQL;
 
 
+CREATE OR REPLACE FUNCTION Info_Shop(integer) RETURNS text AS 
+$$
+SELECT CONCAT_WS(',', S.id, S.shop_name, S.shopping_center_id, S.floor, 
+				 S.location, S.active_from, S.active_to, S.active, S.contract_id, 
+				 S.service_type, C.date_signed , C.date_active_from , C.date_active_to , C.billing_units
+				 , C.company_id) 
+FROM shop AS S INNER JOIN contract AS C ON S.contract_id = C.id 
+WHERE S.id = $1
+$$
+LANGUAGE SQL;
+
+
 -- Contract
+
+CREATE OR REPLACE FUNCTION Select_ContractID() RETURNS SETOF text
+AS $$
+SELECT id 
+FROM contract;
+$$
+LANGUAGE SQL;
+
 
 CREATE FUNCTION insert_aggreement(integer, character varying, character varying, 
 								  character varying, integer, character varying)
@@ -298,7 +345,9 @@ LANGUAGE SQL;
 -- Shopping centers
 SELECT Submit_New_Mall(1, 'Mediterranean Cosmos', '11th km National Road Thessaloniki-N.Moudania, 57001, Thessaloniki');
 SELECT Submit_New_Mall(2, 'One Salonica', 'Kotta Roulia 10, 546 27, Thessaloniki');
-SELECT Submit_New_Mall(3, 'The Mall Athens', 'Andrea Papandreou 35, 15122, Marousi ');
+SELECT Submit_New_Mall(3, 'The Mall Athens', 'Andrea Papandreou 35, 15122, Marousi');
+SELECT Submit_NEW_Mall(999, 'The Mall Athens', 'Andrea Papandreou 35, 15122, Marousi');
+SELECT Submit_NEW_Mall(998, 'The Mall Athens', 'Andrea Papandreou 355, 15122, Marousi');
 
 -- Companies
 SELECT insert_firm(9, 'Adidas', 'Tsimiski 47, 54623, Thessaloniki', 
