@@ -134,8 +134,11 @@ DROP FUNCTION IF EXISTS Select_Mall_id;
 DROP FUNCTION IF EXISTS Select_ServiceType;
 DROP FUNCTION IF EXISTS Select_ContractID;
 
-DROP FUNCTION IF EXISTS get_store_constraints;
-
+DROP FUNCTION IF EXISTS get_shop_check_servicetype;
+DROP FUNCTION IF EXISTS get_shop_check_active;
+DROP FUNCTION IF EXISTS get_shop_check_activefrom;
+DROP FUNCTION IF EXISTS get_shop_check_activeto;
+DROP FUNCTION IF EXISTS get_shop;
 
 -- Shopping_center
 
@@ -201,7 +204,7 @@ $$
 LANGUAGE SQL;
 
 CREATE FUNCTION insert_store(integer, character varying, integer, 
-							 integer, character varying, character varying, 
+							 character varying, character varying, character varying, 
 							 character varying, boolean, integer, character varying) 
 RETURNS void AS 
 $$
@@ -235,7 +238,7 @@ $$
 LANGUAGE SQL;
 
 CREATE FUNCTION edit_store(integer, character varying, integer, 
-						   integer, character varying, character varying, 
+						   character varying, character varying, character varying, 
 						   character varying, boolean, integer, character varying)
 RETURNS void AS 
 $$
@@ -253,10 +256,20 @@ SELECT CONCAT_WS(',', S.id, S.shop_name, S.shopping_center_id, S.floor,
 				 S.service_type, C.date_signed , C.date_active_from , C.date_active_to , C.billing_units
 				 , C.company_id) 
 FROM shop AS S INNER JOIN contract AS C ON S.contract_id = C.id 
-WHERE S.id = $1
+WHERE S.id = $1;
 $$
 LANGUAGE SQL;
 
+
+CREATE OR REPLACE FUNCTION get_shop(integer) RETURNS text AS 
+$$
+SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor, 
+				 location, active_from, active_to, active, contract_id, 
+				 service_type)
+FROM shop  
+WHERE id=$1;
+$$
+LANGUAGE SQL;
 
 -- Contract
 
@@ -345,7 +358,7 @@ LANGUAGE SQL;
 
 --CONSTRAINT
 
-CREATE FUNCTION get_store_constraints() RETURNS SETOF text AS 
+CREATE FUNCTION get_shop_check_servicetype() RETURNS SETOF text AS 
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
@@ -355,9 +368,37 @@ SELECT pg_get_constraintdef(oid) AS res
 $$
 LANGUAGE SQL;
 
+CREATE FUNCTION get_shop_check_activefrom() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.shop'::regclass  
+	  AND    conname = 'shop_check_activefrom';
+$$
+LANGUAGE SQL;
 
 
+CREATE FUNCTION get_shop_check_activeto() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.shop'::regclass  
+	  AND    conname = 'shop_check_activeto';
+$$
+LANGUAGE SQL;
 
+
+CREATE FUNCTION get_shop_check_active() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.shop'::regclass  
+	  AND    conname = 'shop_check_active';
+$$
+LANGUAGE SQL;
 
 
 
@@ -389,7 +430,7 @@ SELECT insert_aggreement(22, '22/09/2009', '01/02/2010', '05/03/2020', 22, 'year
 SELECT insert_aggreement(3, '01/02/2020', '14/03/2020', '31/12/2021', 4, 'weekly');
 SELECT insert_aggreement(99, '11/12/2015', '23/01/2016', '30/05/2025', 9, 'yearly');
 -- Shops
-SELECT insert_store(5, 'Adidas Cosmos 2A', 1, 2, 'A', 'Friday', 'Sunday', true, 99, 'retail');
-SELECT insert_store(32, 'Crocs One Salonica 1C', 2, 1, 'C', 'Monday', 'Saturday', true, 3, 'retail');
-SELECT insert_store(2, 'Goodys Mall Athens 3F', 3, 3, 'F', 'Tuesday', 'Sunday', false, 22, 'food or drink');
-SELECT insert_store(9, 'Village Cinemas Cosmos 0A', 1, 0, 'A', 'Monday', 'Sunday', false, 10, 'entertainment');
+SELECT insert_store(5, 'Adidas Cosmos 2A', 1, '2', 'A', 'Friday', 'Sunday', true, 99, 'retail');
+SELECT insert_store(32, 'Crocs One Salonica 1C', 2, '1', 'C', 'Monday', 'Saturday', true, 3, 'retail');
+SELECT insert_store(2, 'Goodys Mall Athens 3F', 3, '3', 'F', 'Tuesday', 'Sunday', false, 22, 'food or drink');
+SELECT insert_store(9, 'Village Cinemas Cosmos 0A', 1, '0', 'A', 'Monday', 'Sunday', false, 10, 'entertainment');

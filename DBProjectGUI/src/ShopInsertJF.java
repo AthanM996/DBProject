@@ -19,13 +19,12 @@ public class ShopInsertJF extends javax.swing.JFrame {
 
     
     
-    public Connection StartConn(){
+    private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
         String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
         String     username = "postgres";
         String     passwd = "147896325!";
-        Connection conn = null;
-        
+        Connection conn = null;   
         try{
             conn= DriverManager.getConnection(url, username, passwd);
         }catch (SQLException ex){
@@ -46,11 +45,12 @@ public class ShopInsertJF extends javax.swing.JFrame {
     } 
       
       
-    public void ACtionPerformed(java.awt.event.ActionEvent e){
+    private void ACtionPerformed(java.awt.event.ActionEvent e){
         if (e.getSource() == ShopInsertSubmitButton){
-            
+                submit();
+                clear();
         }else if (e.getSource() == ShopInsertClearButton){
-            
+                clear();
         }
         
     }
@@ -60,39 +60,35 @@ public class ShopInsertJF extends javax.swing.JFrame {
     public ShopInsertJF() {
         initComponents();
         WindowAtCenter(this);
-        if (inisialize()){
-            this.dispose();
-        }
+        inisialize();
     }
     
    
     
-    public boolean inisialize(){
-        String addressnum=null;
-        String value="CHECK (((active_from)::text = ANY ((ARRAY['Monday'::character varying, 'Tuesday'::character varying, 'Wednesday'::character varying, 'Thursday'::character varying, 'Friday'::character varying, 'Saturday'::character varying, 'Sunday'::character varying])::text[])))";
-        Pattern pattern = Pattern.compile("\\[(.*)\\]");
-        Matcher matcher = pattern.matcher(value);
-        if (matcher.find()){
-          addressnum = matcher.group(1);
-        }
-        System.out.println(addressnum);
-        
-        
-        
-        
-        
-        
+    public void inisialize(){
+
+        Pattern pattern;
+        Matcher matcher;
         boolean flag = false;
+        
         Connection conn = null;
         Statement stmt_MallID = null;
         Statement stmt_ContractID = null;
         Statement stmt_serviceType = null;
+        Statement stmt_ActFrom = null;
+        Statement stmt_ActTo = null;
+        Statement stmt_Act = null;
+        
         ResultSet rs_MallID = null;
         ResultSet rs_ContractID = null;
         ResultSet rs_serviceType = null;
-        
+        ResultSet rs_ActFrom = null;
+        ResultSet rs_ActTo = null;
+        ResultSet rs_Act = null;
+               
         try{
             conn = StartConn();
+            //Γεμισμα με τις τιμες απο τον πινακα Malls με το διαθεσιμα ids 
             stmt_MallID = conn.createStatement();
             rs_MallID = stmt_MallID.executeQuery("SELECT Select_Mall_id()");
             if (rs_MallID.next() == false){
@@ -104,6 +100,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
                     ShopInsertMallIDCB.addItem(rs_MallID.getString(1));    
                 }while (rs_MallID.next());
             }
+            //Γεμισμα με τις τιμες απο τον πινακα contract με το διαθεσημα id
             stmt_ContractID = conn.createStatement();      
             rs_ContractID = stmt_ContractID.executeQuery("SELECT Select_ContractID()");
             if (rs_ContractID.next() == false){
@@ -115,23 +112,84 @@ public class ShopInsertJF extends javax.swing.JFrame {
                     ShopInsertContIDCB.addItem(rs_ContractID.getString(1));    
                 }while (rs_ContractID.next());
             }
+            //Γεμισμα με τις τιμες απο το constraint για τα Service Type
             stmt_serviceType = conn.createStatement();
-            rs_serviceType = stmt_serviceType.executeQuery("SELECT Select_ServiceType()");
+            rs_serviceType = stmt_serviceType.executeQuery("SELECT get_shop_check_servicetype()");
             if (rs_serviceType.next() == false){
-                flag = true;
                 ShopInsertSubmitButton.setEnabled(false);
                 ShopInsertClearButton.setEnabled(false);
             }else{
-                do{
-                    ShopInsertServiceTypeCB.addItem(rs_serviceType.getString(1));    
-                }while (rs_serviceType.next());
+                pattern = Pattern.compile("\\[(.*)\\]");
+                matcher = pattern.matcher(rs_serviceType.getString(1));
+                if (matcher.find()){
+                   String [] split_values_at_coma = matcher.group(1).split(",");
+                   for (int i=0 ; i < split_values_at_coma.length ; i++){
+                       String [] split_value_at_anokato = split_values_at_coma[i].split("::");
+                       String value = split_value_at_anokato[0].trim();
+                       ShopInsertServiceTypeCB.addItem(value.substring(1, value.length()-1));                     
+                   }
+                }              
             }
+            //Εισαγωγη των τιμων του constraint Active From
+            stmt_ActFrom = conn.createStatement();
+            rs_ActFrom = stmt_ActFrom.executeQuery("SELECT get_shop_check_activefrom()");
+            if (rs_ActFrom.next() == false){
+                ShopInsertSubmitButton.setEnabled(false);
+                ShopInsertClearButton.setEnabled(false);
+            }else{
+                pattern = Pattern.compile("\\[(.*)\\]");
+                matcher = pattern.matcher(rs_ActFrom.getString(1));
+                if (matcher.find()){
+                   String [] split_values_at_coma = matcher.group(1).split(",");
+                   for (int i=0 ; i < split_values_at_coma.length ; i++){
+                       String [] split_value_at_anokato = split_values_at_coma[i].split("::");
+                       String value = split_value_at_anokato[0].trim();
+                       ShopInsertActFromCB.addItem(value.substring(1, value.length()-1));                     
+                   }
+                }
+            }
+            //Εισαγωγη των τιμων του constraint Active To
+            stmt_ActTo = conn.createStatement();
+            rs_ActTo = stmt_ActFrom.executeQuery("SELECT get_shop_check_activeto()");
+            if (rs_ActTo.next() == false){
+                ShopInsertSubmitButton.setEnabled(false);
+                ShopInsertClearButton.setEnabled(false);
+            }else{
+                pattern = Pattern.compile("\\[(.*)\\]");
+                matcher = pattern.matcher(rs_ActTo.getString(1));
+                if (matcher.find()){
+                   String [] split_values_at_coma = matcher.group(1).split(",");
+                   for (int i=0 ; i < split_values_at_coma.length ; i++){
+                       String [] split_value_at_anokato = split_values_at_coma[i].split("::");
+                       String value = split_value_at_anokato[0].trim();
+                       ShopInsertActToCB.addItem(value.substring(1, value.length()-1));                     
+                   }
+                }
+            }
+            //Εισαγωγη των τιμων του constraint Active
+            stmt_Act = conn.createStatement();
+            rs_Act = stmt_Act.executeQuery("SELECT get_shop_check_active()");
+            if (rs_Act.next() == false){
+                ShopInsertSubmitButton.setEnabled(false);
+                ShopInsertClearButton.setEnabled(false);
+            }else{
+                pattern = Pattern.compile("\\[(.*)\\]");
+                matcher = pattern.matcher(rs_Act.getString(1));
+                if (matcher.find()){
+                    String [] values = matcher.group(1).split(",");
+                    ShopInsertActCB.addItem(values[0]);
+                    ShopInsertActCB.addItem(values[1]);
+                }
+            } 
             if (flag){
                 javax.swing.JOptionPane.showMessageDialog(null, "Ther is no values at the database please insert values first!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }
-            rs_serviceType.close();
-            rs_ContractID.close();
-            rs_MallID.close();
+             stmt_MallID.close();
+             stmt_ContractID.close();
+             stmt_serviceType.close();
+             stmt_ActFrom.close();
+             stmt_ActTo.close();
+             stmt_Act.close();
         }catch (SQLException ex){
             System.out.println("SQL Exception");
             while (ex != null){
@@ -147,22 +205,107 @@ public class ShopInsertJF extends javax.swing.JFrame {
                 System.out.println(ex);
             }
         }
-        return flag;
+        
  
     }
     
+    
+    private void clear(){
+
+            ShopInsertActCB.setSelectedIndex(0);
+            ShopInsertActFromCB.setSelectedIndex(0);
+            ShopInsertActToCB.setSelectedIndex(0);
+            ShopInsertContIDCB.setSelectedIndex(0);
+            ShopInsertMallIDCB.setSelectedIndex(0);
+            ShopInsertServiceTypeCB.setSelectedIndex(0);
+            ShopInsertFloorTF.setText("");
+            ShopInsertLocationTF.setText("");
+            ShopInsertShopIDTF.setText("");
+            ShopInsertShopNameTF.setText("");
+    }
     
     
     
     public void submit(){
         Connection conn = null;
         PreparedStatement prepared = null;
+        boolean error = false;
+        boolean active;
+        String active_from;
+        String active_to;
+        int contract_id;
+        int mall_id;
+        String service_type;
+        String floor;
+        String location;
+        String shop_name;
+        int shop_id = 0;
         
         
-        
-        
-        
-    }
+        if ((ShopInsertFloorTF.getText().isBlank()) || (ShopInsertLocationTF.getText().isBlank()) || (ShopInsertShopNameTF.getText().isBlank()) || (ShopInsertShopIDTF.getText().isBlank())){
+            javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+        }else{
+            active = Boolean.parseBoolean((String)ShopInsertActCB.getSelectedItem());
+            active_from = (String) ShopInsertActFromCB.getSelectedItem();
+            active_to = (String) ShopInsertActToCB.getSelectedItem();
+            contract_id = Integer.parseInt((String)ShopInsertContIDCB.getSelectedItem());
+            mall_id = Integer.parseInt((String)ShopInsertMallIDCB.getSelectedItem());  
+            service_type = (String) ShopInsertServiceTypeCB.getSelectedItem();
+            floor = ShopInsertFloorTF.getText();
+            location = ShopInsertLocationTF.getText();
+            shop_name = ShopInsertShopNameTF.getText();
+            try{
+                shop_id = Integer.parseInt(ShopInsertShopIDTF.getText().trim());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number at Shop ID!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
+            if (shop_id <=0){
+                error=true;
+            }
+            if (error){
+                System.out.println("Error");
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            }else{
+                 try{
+                    conn = StartConn();
+                    prepared = conn.prepareStatement("SELECT insert_store(?,?,?,?,?,?,?,?,?,?)");
+                    prepared.setInt(1, shop_id);
+                    prepared.setString(2, shop_name);
+                    prepared.setInt(3,mall_id);
+                    prepared.setString(4, floor);
+                    prepared.setString(5, location);
+                    prepared.setString(6,active_from);
+                    prepared.setString(7,active_to);
+                    prepared.setBoolean(8, active);
+                    prepared.setInt(9,contract_id);
+                    prepared.setString(10, service_type);
+                    prepared.executeQuery();
+                    prepared.close();
+                    javax.swing.JOptionPane.showMessageDialog(null, "The subbmit has complete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    }catch (SQLException ex){
+                        switch (ex.getSQLState()){
+                            case "23505":
+                                javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                                clear();
+                                break;
+                    }
+                    System.out.println("Message: " + ex.getMessage());
+                    System.out.println("SQLState: " + ex.getSQLState());
+                    System.out.println("ErrorCode: " + ex.getErrorCode());
+                }finally{
+                    try{
+                        conn.close();
+                    }catch (SQLException ex){
+                        System.out.println("Message: " + ex.getMessage());
+                        System.out.println("SQLState: " + ex.getSQLState());
+                        System.out.println("ErrorCode: " + ex.getErrorCode());
+                    }
+                }
+                
+            }
+        }       
+}
     
     
     
@@ -191,11 +334,11 @@ public class ShopInsertJF extends javax.swing.JFrame {
         ShopInsertShopNameTF = new javax.swing.JTextField();
         ShopInsertFloorTF = new javax.swing.JTextField();
         ShopInsertLocationTF = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        ShopInsertActFromCB = new javax.swing.JComboBox<>();
+        ShopInsertActToCB = new javax.swing.JComboBox<>();
+        ShopInsertActCB = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(200, 255, 240));
 
@@ -235,10 +378,20 @@ public class ShopInsertJF extends javax.swing.JFrame {
         ShopInsertClearButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         ShopInsertClearButton.setText("Clear");
         ShopInsertClearButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        ShopInsertClearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         ShopInsertSubmitButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         ShopInsertSubmitButton.setText("Submit");
         ShopInsertSubmitButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        ShopInsertSubmitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         ShopInsertMallIDCB.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         ShopInsertMallIDCB.setMaximumRowCount(50);
@@ -252,26 +405,10 @@ public class ShopInsertJF extends javax.swing.JFrame {
         ShopInsertShopIDTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
         ShopInsertShopNameTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        ShopInsertShopNameTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ShopInsertShopNameTFActionPerformed(evt);
-            }
-        });
 
         ShopInsertFloorTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
         ShopInsertLocationTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" }));
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Yes", "No" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -308,34 +445,34 @@ public class ShopInsertJF extends javax.swing.JFrame {
                         .addGap(22, 22, 22))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(ShopInsertContIDCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ShopInsertServiceTypeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(87, 87, 87))))
+                            .addComponent(ShopInsertActFromCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ShopInsertActToCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ShopInsertActCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ShopInsertContIDCB, 0, 139, Short.MAX_VALUE)
+                            .addComponent(ShopInsertServiceTypeCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(280, 280, 280)
+                .addGap(346, 346, 346)
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(39, 39, 39)
+                .addGap(35, 35, 35)
                 .addComponent(jLabel1)
-                .addGap(34, 34, 34)
+                .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel7)
                     .addComponent(ShopInsertShopIDTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ShopInsertActFromCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(49, 49, 49)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jLabel8)
                     .addComponent(ShopInsertShopNameTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ShopInsertActToCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(52, 52, 52)
@@ -346,7 +483,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ShopInsertActCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10))
                         .addGap(62, 62, 62)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -360,7 +497,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
                     .addComponent(ShopInsertLocationTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ShopInsertServiceTypeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ShopInsertSubmitButton)
                     .addComponent(ShopInsertClearButton))
@@ -381,13 +518,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void ShopInsertShopNameTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShopInsertShopNameTFActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ShopInsertShopNameTFActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -426,6 +557,9 @@ public class ShopInsertJF extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> ShopInsertActCB;
+    private javax.swing.JComboBox<String> ShopInsertActFromCB;
+    private javax.swing.JComboBox<String> ShopInsertActToCB;
     private javax.swing.JButton ShopInsertClearButton;
     private javax.swing.JComboBox<String> ShopInsertContIDCB;
     private javax.swing.JTextField ShopInsertFloorTF;
@@ -435,9 +569,6 @@ public class ShopInsertJF extends javax.swing.JFrame {
     private javax.swing.JTextField ShopInsertShopIDTF;
     private javax.swing.JTextField ShopInsertShopNameTF;
     private javax.swing.JButton ShopInsertSubmitButton;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

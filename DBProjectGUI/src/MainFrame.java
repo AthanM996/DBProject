@@ -265,8 +265,6 @@ public class MainFrame extends javax.swing.JFrame {
         //SHOPS
         }else if(e.getSource() == ShowAllShopsButton){
             refresh(ShopsList);
-        }else if(e.getSource() == RefreshShopsButton){
-            refresh(ShopsList);
         }else if(e.getSource() == DeleteShopsButton){
             deleteShop();
         }else if(e.getSource() == InfoShopsButton){
@@ -274,9 +272,12 @@ public class MainFrame extends javax.swing.JFrame {
             info_shop.inisialize(ShopsList.getSelectedValue());
             info_shop.setVisible(true);
         }else if(e.getSource() == InsertShopsButton){
-            System.out.print("press");
            ShopInsertJF aa = new ShopInsertJF();
            aa.setVisible(true);
+        }else if (e.getSource() == EditShopsButton){
+            ShopEditJF shopEdit = new ShopEditJF();
+            shopEdit.inisialize(ShopsList.getSelectedValue());
+            shopEdit.setVisible(true);
         }
 
     }
@@ -309,7 +310,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         InsertShopsButton = new javax.swing.JButton();
         DeleteShopsButton = new javax.swing.JButton();
-        RefreshShopsButton = new javax.swing.JButton();
         InfoShopsButton = new javax.swing.JButton();
         ShowAllShopsButton = new javax.swing.JButton();
         EditShopsButton = new javax.swing.JButton();
@@ -470,15 +470,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        RefreshShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        RefreshShopsButton.setText("Refresh");
-        RefreshShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        RefreshShopsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ACtionPerformed(evt);
-            }
-        });
-
         InfoShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         InfoShopsButton.setText("Info");
         InfoShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -500,6 +491,11 @@ public class MainFrame extends javax.swing.JFrame {
         EditShopsButton.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         EditShopsButton.setText(" Edit");
         EditShopsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        EditShopsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout ShopTabLayout = new javax.swing.GroupLayout(ShopTab);
         ShopTab.setLayout(ShopTabLayout);
@@ -515,15 +511,13 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 672, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ShopTabLayout.createSequentialGroup()
                         .addComponent(InsertShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
-                        .addComponent(DeleteShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(DeleteShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(70, 70, 70)
                         .addComponent(EditShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
-                        .addComponent(RefreshShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
+                        .addGap(65, 65, 65)
                         .addComponent(InfoShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
+                        .addGap(70, 70, 70)
                         .addComponent(ShowAllShopsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(74, Short.MAX_VALUE))
         );
@@ -540,8 +534,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(DeleteShopsButton)
                     .addComponent(InfoShopsButton)
                     .addComponent(ShowAllShopsButton)
-                    .addComponent(EditShopsButton)
-                    .addComponent(RefreshShopsButton))
+                    .addComponent(EditShopsButton))
                 .addContainerGap(477, Short.MAX_VALUE))
         );
 
@@ -583,6 +576,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+
 
 
 
@@ -638,7 +633,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JList MallsList;
     private javax.swing.JPanel MallsTab;
     private javax.swing.JButton RefreshMallsButton;
-    private javax.swing.JButton RefreshShopsButton;
     private javax.swing.JButton SelectMallsButton;
     private javax.swing.JPanel ShopTab;
     private javax.swing.JList<String> ShopsList;

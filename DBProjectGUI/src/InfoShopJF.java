@@ -76,7 +76,6 @@ public class InfoShopJF extends javax.swing.JFrame {
                     ShopInfoServiceType.setText(rs_return_list[9]);
                     ShopInfoShopID.setText(rs_return_list[0]);
                     ShopInfoShopName.setText(rs_return_list[1]);
-                    System.out.print(rs_return);
                 }while (rs.next());
                 prepared.close();
             }
@@ -147,7 +146,7 @@ public class InfoShopJF extends javax.swing.JFrame {
         ShopInfoConntractID = new javax.swing.JLabel();
         ShopInfoServiceType = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jSplitPane1.setBackground(new java.awt.Color(254, 174, 174));
         jSplitPane1.setDividerLocation(350);
@@ -350,7 +349,7 @@ public class InfoShopJF extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(290, 290, 290)
                         .addComponent(jLabel7)))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
