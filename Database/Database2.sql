@@ -105,6 +105,18 @@ CREATE TABLE public.Shop
 );
 
 
+DROP TABLE IF EXISTS public.logfile;
+
+CREATE TABLE public.logfile 
+(
+	operation character varying(1) NOT NULL,
+	time_of_operation timestamp NOT NULL,
+	userid character varying(50) NOT NULL,
+	operation_data text,
+	CONSTRAINT logfile_checkOperation CHECK (operation IN ('D', 'U', 'I'))
+);
+
+
 -- Functions
 DROP FUNCTION IF EXISTS all_malls;
 DROP FUNCTION IF EXISTS insert_mall;
@@ -140,6 +152,13 @@ DROP FUNCTION IF EXISTS get_shop_check_activefrom;
 DROP FUNCTION IF EXISTS get_shop_check_activeto;
 DROP FUNCTION IF EXISTS get_shop;
 
+DROP FUNCTION IF EXISTS log_operation;
+DROP TRIGGER IF EXISTS log_company ON company;
+DROP TRIGGER IF EXISTS log_contract ON contract;
+DROP TRIGGER IF EXISTS log_shoppingCenter ON shopping_center;
+DROP TRIGGER IF EXISTS log_shop ON shop;
+DROP TRIGGER IF EXISTS log_invoice ON invoice;
+
 -- Shopping_center
 
 CREATE FUNCTION Select_Mall_id() RETURNS SETOF TEXT 
@@ -148,9 +167,6 @@ SELECT DISTINCT(id)
 FROM shopping_center;
 $$ 
 LANGUAGE SQL;
-
-
-
 
 CREATE FUNCTION Fill_Malls_List() RETURNS SETOF Shopping_center AS 
 $$ 
@@ -166,10 +182,12 @@ VALUES ($1, $2, $3);
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION Select_Mall(integer) RETURNS TABLE ( shop_ID  integer, 
+CREATE OR REPLACE FUNCTION Select_Mall(integer) RETURNS TABLE (
+								shop_ID  integer, 
 								shop_name character varying(255), 
 								shopping_center_id integer,
-								shopping_center_name character varying(255)) 
+								shopping_center_name character varying(255)
+								) 
 AS $$
 SELECT S.id, S.shop_name, S.shopping_center_id ,SC.name AS shoppingCenterName
 FROM Shop S JOIN Shopping_Center SC ON S.shopping_center_id=SC.id
@@ -400,7 +418,50 @@ SELECT pg_get_constraintdef(oid) AS res
 $$
 LANGUAGE SQL;
 
+-- Triggers
 
+CREATE FUNCTION log_operation() RETURNS TRIGGER AS
+$$
+BEGIN
+	IF (TG_OP = 'DELETE') THEN
+		INSERT INTO logfile SELECT 'D', now(), user, CONCAT_WS(',', OLD.*);
+		RETURN OLD;
+	ELSIF (TG_OP = 'UPDATE') THEN
+		INSERT INTO logfile SELECT 'U', now(), user, CONCAT_WS(',', NEW.*);
+		RETURN NEW;
+	ELSIF (TG_OP = 'INSERT') THEN
+		INSERT INTO logfile SELECT 'I', now(), user, CONCAT_WS(',', NEW.*);
+		RETURN NEW;
+	END IF;
+	RETURN NULL;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+CREATE TRIGGER log_shoppingCenter
+AFTER INSERT OR UPDATE OR DELETE 
+ON shopping_center 
+FOR EACH ROW EXECUTE PROCEDURE log_operation();
+
+CREATE TRIGGER log_company 
+AFTER INSERT OR UPDATE OR DELETE 
+ON company 
+FOR EACH ROW EXECUTE PROCEDURE log_operation();
+
+CREATE TRIGGER log_shop 
+AFTER INSERT OR UPDATE OR DELETE 
+ON shop 
+FOR EACH ROW EXECUTE PROCEDURE log_operation();
+
+CREATE TRIGGER log_invoice
+AFTER INSERT OR UPDATE OR DELETE 
+ON  invoice
+FOR EACH ROW EXECUTE PROCEDURE log_operation();
+
+CREATE TRIGGER log_contract
+AFTER INSERT OR UPDATE OR DELETE 
+ON  contract
+FOR EACH ROW EXECUTE PROCEDURE log_operation();
 
 -- Data
 
