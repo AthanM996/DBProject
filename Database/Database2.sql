@@ -59,7 +59,7 @@ CREATE TABLE public.Invoice
     fee double precision,
     tax double precision,
     total_amount double precision,
-    time_created timestamp without time zone,
+    time_created character varying(100),
     date_issued character varying(10),
     date_paid character varying(10),
     CONSTRAINT Invoice_pkey PRIMARY KEY (id),
@@ -151,6 +151,12 @@ DROP FUNCTION IF EXISTS get_shop_check_active;
 DROP FUNCTION IF EXISTS get_shop_check_activefrom;
 DROP FUNCTION IF EXISTS get_shop_check_activeto;
 DROP FUNCTION IF EXISTS get_shop;
+
+DROP FUNCTION IF EXISTS all_bills;
+DROP FUNCTION IF EXISTS edit_bill;
+DROP FUNCTION IF EXISTS insert_bill;
+DROP FUNCTION IF EXISTS select_bill;
+DROP FUNCTION IF EXISTS delete_bill;
 
 DROP FUNCTION IF EXISTS log_operation;
 DROP TRIGGER IF EXISTS log_company ON company;
@@ -373,6 +379,49 @@ SELECT CONCAT_WS(',', id, name) FROM company ORDER BY id;
 $$
 LANGUAGE SQL;
 
+-- Invoice
+
+CREATE FUNCTION all_bills() RETURNS SETOF text AS
+$$
+SELECT CONCAT_WS(',', invoice.*) FROM invoice
+$$
+LANGUAGE SQL;
+
+CREATE FUNCTION insert_bill(integer, integer, integer, double precision,
+							double precision, double precision,
+						    double precision, character varying,
+						    character varying, character varying) 
+RETURNS void AS
+$$
+INSERT INTO invoice (id, contract_id, issued_by_id, invoice_amount, fee, tax, 
+					 total_amount, time_created, date_issued, date_paid)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+$$
+LANGUAGE SQL;
+
+CREATE FUNCTION edit_bill(integer, integer, integer, double precision,
+						  double precision, double precision,
+						  double precision, character varying,
+						  character varying, character varying)
+RETURNS void AS
+$$
+UPDATE invoice SET contract_id = $2, issued_by_id = $3, invoice_amount = $4, fee = $5, tax = $6, 
+			       total_amount = $7, time_created = $8, date_issued = $9, date_paid = $10
+WHERE id = $1;
+$$
+LANGUAGE SQL;
+
+CREATE FUNCTION delete_bill(integer) RETURNS void AS
+$$
+DELETE FROM invoice * WHERE id = $1;
+$$
+LANGUAGE SQL;
+
+CREATE FUNCTION select_bill(integer) RETURNS text AS
+$$
+SELECT CONCAT_WS(',', invoice.*) FROM invoice WHERE id = $1;
+$$
+LANGUAGE SQL;
 
 --CONSTRAINT
 
