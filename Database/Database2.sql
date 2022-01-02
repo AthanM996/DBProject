@@ -42,7 +42,7 @@ CREATE TABLE public.Contract
     CONSTRAINT Contract_pkey PRIMARY KEY (id),
     CONSTRAINT Contract_fkey_Company_id FOREIGN KEY (company_id)
         REFERENCES public.Company (id)
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE, -- Na to ksanakoitaksw
 	CONSTRAINT Contract_check_billingUnits CHECK (billing_units IN ('weekly', 'monthly', 'yearly'))
 );
@@ -65,12 +65,12 @@ CREATE TABLE public.Invoice
     CONSTRAINT Invoice_pkey PRIMARY KEY (id),
     CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (company_id)
         REFERENCES public.Company (id)
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT Invoice_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
-        ON UPDATE NO ACTION
-        ON DELETE SET NULL
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 
@@ -86,13 +86,13 @@ CREATE TABLE public.Shop
     active_from character varying(100),
     active_to character varying(100),
     active boolean,
-    contract_id integer DEFAULT -1,
+    contract_id integer,
 	service_type character varying(100),
     CONSTRAINT Shop_pkey PRIMARY KEY (id),
     CONSTRAINT Shop_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
-        ON UPDATE NO ACTION
-        ON DELETE SET DEFAULT,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT Shop_fkey_ShoppingCenter_id FOREIGN KEY (shopping_center_id)
         REFERENCES public.Shopping_center (id)
         ON UPDATE CASCADE
