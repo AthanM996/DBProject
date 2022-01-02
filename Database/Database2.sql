@@ -136,6 +136,7 @@ DROP FUNCTION IF EXISTS insert_aggreement;
 DROP FUNCTION IF EXISTS delete_aggreement;
 DROP FUNCTION IF EXISTS edit_aggreement;
 DROP FUNCTION IF EXISTS all_aggreements;
+DROP FUNCTION IF EXISTS get_con_voice;
 
 DROP FUNCTION IF EXISTS all_firms;
 DROP FUNCTION IF EXISTS insert_firm;
@@ -336,6 +337,16 @@ CREATE FUNCTION all_aggreements() RETURNS SETOF text AS
 $$
 SELECT CONCAT_WS(',', id, date_signed, date_active_from, date_active_to, company_id, billing_units)
 FROM contract ORDER BY id;
+$$
+LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_con_voice(integer) RETURNS SETOF text AS 
+$$
+SELECT CONCAT_WS(',',CO.id, CO.date_signed, CO.date_active_from, CO.date_active_to, CO.company_id, CO.billing_units,
+		 I.id, I.contract_id, I.company_id, I.invoice_amount, I.fee, I.tax, I.total_amount, I.time_created, I.date_paid)
+FROM contract  CO INNER JOIN invoice  I ON CO.id = I.contract_id 
+WHERE CO.id=$1;
 $$
 LANGUAGE SQL;
 

@@ -109,7 +109,10 @@ public class ShopInsertJF extends javax.swing.JFrame {
                 ShopInsertClearButton.setEnabled(false);
             }else{
                 do{
-                    ShopInsertContIDCB.addItem(rs_ContractID.getString(1));    
+                    if (!rs_ContractID.getString(1).equals("-1")){
+                        ShopInsertContIDCB.addItem(rs_ContractID.getString(1));
+                    }
+                    
                 }while (rs_ContractID.next());
             }
             //Γεμισμα με τις τιμες απο το constraint για τα Service Type
