@@ -54,7 +54,7 @@ CREATE TABLE public.Invoice
 (
     id integer NOT NULL,
     contract_id integer,
-    issued_by_id integer,
+    company_id integer,
     invoice_amount double precision,
     fee double precision,
     tax double precision,
@@ -63,7 +63,7 @@ CREATE TABLE public.Invoice
     date_issued character varying(10),
     date_paid character varying(10),
     CONSTRAINT Invoice_pkey PRIMARY KEY (id),
-    CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (issued_by_id)
+    CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (company_id)
         REFERENCES public.Company (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
@@ -401,7 +401,7 @@ CREATE FUNCTION insert_bill(integer, integer, integer, double precision,
 						    character varying, character varying) 
 RETURNS void AS
 $$
-INSERT INTO invoice (id, contract_id, issued_by_id, invoice_amount, fee, tax, 
+INSERT INTO invoice (id, contract_id, company_id, invoice_amount, fee, tax, 
 					 total_amount, time_created, date_issued, date_paid)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 $$
@@ -413,7 +413,7 @@ CREATE FUNCTION edit_bill(integer, integer, integer, double precision,
 						  character varying, character varying)
 RETURNS void AS
 $$
-UPDATE invoice SET contract_id = $2, issued_by_id = $3, invoice_amount = $4, fee = $5, tax = $6, 
+UPDATE invoice SET contract_id = $2, company_id = $3, invoice_amount = $4, fee = $5, tax = $6, 
 			       total_amount = $7, time_created = $8, date_issued = $9, date_paid = $10
 WHERE id = $1;
 $$
