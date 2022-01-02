@@ -92,7 +92,7 @@ CREATE TABLE public.Shop
     CONSTRAINT Shop_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE SET NULL,
     CONSTRAINT Shop_fkey_ShoppingCenter_id FOREIGN KEY (shopping_center_id)
         REFERENCES public.Shopping_center (id)
         ON UPDATE CASCADE
