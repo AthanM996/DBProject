@@ -66,11 +66,11 @@ CREATE TABLE public.Invoice
     CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (company_id)
         REFERENCES public.Company (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE SET NULL,
     CONSTRAINT Invoice_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE SET NULL
 );
 
 
@@ -86,13 +86,13 @@ CREATE TABLE public.Shop
     active_from character varying(100),
     active_to character varying(100),
     active boolean,
-    contract_id integer,
+    contract_id integer DEFAULT -1,
 	service_type character varying(100),
     CONSTRAINT Shop_pkey PRIMARY KEY (id),
     CONSTRAINT Shop_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
-        ON DELETE SET NULL,
+        ON DELETE SET DEFAULT,
     CONSTRAINT Shop_fkey_ShoppingCenter_id FOREIGN KEY (shopping_center_id)
         REFERENCES public.Shopping_center (id)
         ON UPDATE CASCADE
@@ -554,6 +554,7 @@ SELECT insert_firm(102, 'Village Cinemas', 'Mitropoleos 101, 54622, Thessaloniki
 				   'Ioannis Kontos', 'cine@villagesupport.gr',
 				   '23102309390', '6943985487');
 -- Contracts
+INSERT INTO contract(id) VALUES (-1);
 SELECT insert_aggreement(10, '19/11/2018', '22/10/2019', '04/11/2020', 102, 'monthly');
 SELECT insert_aggreement(22, '22/09/2009', '01/02/2010', '05/03/2020', 22, 'yearly');
 SELECT insert_aggreement(3, '01/02/2020', '14/03/2020', '31/12/2021', 4, 'weekly');
