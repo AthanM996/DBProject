@@ -363,8 +363,10 @@ public class MainFrame extends javax.swing.JFrame {
             deleteShop();
         }else if(e.getSource() == InfoShopsButton){
             InfoShopJF info_shop = new InfoShopJF();
-            info_shop.inisialize(ShopsList.getSelectedValue());
-            info_shop.setVisible(true);
+            if (info_shop.inisialize(ShopsList.getSelectedValue())){
+                info_shop.setVisible(true);
+            }
+            
         }else if(e.getSource() == InsertShopsButton){
            ShopInsertJF aa = new ShopInsertJF();
            aa.setVisible(true);
@@ -382,8 +384,10 @@ public class MainFrame extends javax.swing.JFrame {
             insertContract.setVisible(true);
         }else if (e.getSource() == ContractsInfoButton) {
             InfoContractJF infoCon = new InfoContractJF();
-            infoCon.inisialize(ContractsList.getSelectedValue());
-            infoCon.setVisible(true);
+            if (infoCon.inisialize(ContractsList.getSelectedValue())){
+                infoCon.setVisible(true);
+            }
+            
         }
 
 

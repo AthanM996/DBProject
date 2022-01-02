@@ -39,15 +39,18 @@ public class InfoContractJF extends javax.swing.JFrame {
         }
         return conn;
     }
+
+    public void kill(JFrame frame){
+        frame.dispose();
+    }
     
-    
-    public void inisialize(String select){
+    public boolean inisialize(String select){
         Connection conn = null;
         PreparedStatement prepared = null;
         ResultSet rs =null;
         String [] list = select.split(":");
         int id =Integer.parseInt(list[1].trim().substring(0, list[1].length()-12).trim());
-
+        boolean flag =true;
        
         
         try{
@@ -56,19 +59,46 @@ public class InfoContractJF extends javax.swing.JFrame {
             prepared.setInt(1,id);
             rs = prepared.executeQuery();
             if (rs.next() == false){
-                javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no invoice for this contract!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                flag=false;
             }else{
                 do{
                     String [] value_list = rs.getString(1).split(",");
-                    
+                    InfoContractIDLabel.setText(value_list[0]);
+                    InfoContractDateSinLabel.setText(value_list[1]);
+                    InfoContractDateActFromLabel.setText(value_list[2]);
+                    InfoContractDateActToLabel.setText(value_list[3]);
+                    InfoContractCompanyIDLabel.setText(value_list[4]);
+                    InfoContractBillingUnitsLabel.setText(value_list[5]);
+                    InfoContractVIDLabel.setText(value_list[0]);
+                    InfoContractInvoiceCodeLabel.setText(value_list[6]);
+                    //InfoContractVContractIDLabel.setText(value_list[7]);
+                    InfoContractVCompanyIDLabel.setText(value_list[8]);
+                    InfoContractVInvoideAmountLabel.setText(value_list[9]);
+                    InfoContractVFeeLabel.setText(value_list[10]);
+                    InfoContractVTaxLabel.setText(value_list[11]);
+                    InfoContractVTotalAmountLabel.setText(value_list[12]);
+                    InfoContractVTimeCreatedLabel.setText(value_list[13]);
+                    InfoContractVDatePaidLabel.setText(value_list[14]);
+
+
                 }while (rs.next());
+                prepared.close();
             }
         }catch (SQLException ex){
             System.out.println("Message: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("ErrorCode: " + ex.getErrorCode());
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+            }
         }
-        
+        return flag;
         
     }
     
@@ -125,7 +155,7 @@ public class InfoContractJF extends javax.swing.JFrame {
         InfoContractVTimeCreatedLabel = new javax.swing.JLabel();
         InfoContractVDatePaidLabel = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jSplitPane1.setDividerLocation(500);
 

@@ -42,13 +42,14 @@ public class InfoShopJF extends javax.swing.JFrame {
         objFrame.setLocation(iCoordX, iCoordY); 
     }
     
-    public void inisialize(String value){
+    public boolean inisialize(String value){
         Connection conn = null;
         PreparedStatement prepared = null;
         ResultSet rs = null;
         String rs_return;
         String[] list_values = value.split(" ");
         int id = Integer.parseInt(list_values[1]);
+        boolean flag = true;
       
         try{
             conn = StartConn();
@@ -57,6 +58,7 @@ public class InfoShopJF extends javax.swing.JFrame {
             rs = prepared.executeQuery();
             if (rs.next() == false){
                 javax.swing.JOptionPane.showMessageDialog(null, "The is an Error at data","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                flag =false;
             }else{
                 do{
                     rs_return = rs.getString(1);
@@ -111,7 +113,7 @@ public class InfoShopJF extends javax.swing.JFrame {
                     System.out.println("ErrorCode: " + ex.getErrorCode());
             }
         }
-        
+        return flag;
     }
     
     
