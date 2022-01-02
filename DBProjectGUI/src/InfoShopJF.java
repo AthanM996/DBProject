@@ -61,21 +61,40 @@ public class InfoShopJF extends javax.swing.JFrame {
                 do{
                     rs_return = rs.getString(1);
                     String [] rs_return_list = rs_return.split(",");
-                    InfoShopBillingUnits.setText(rs_return_list[13]);
-                    InfoShopCompanyID.setText(rs_return_list[14]);
-                    InfoShopDateActFrom.setText(rs_return_list[11]);
-                    InfoShopDateActTo.setText(rs_return_list[12]);
-                    InfoShopDateSin.setText(rs_return_list[10]);
-                    ShopInfoAct.setText(rs_return_list[7]);
-                    ShopInfoActFrom.setText(rs_return_list[5]);
-                    ShopInfoActTo.setText(rs_return_list[6]);
-                    ShopInfoCenterID.setText(rs_return_list[2]);
-                    ShopInfoConntractID.setText(rs_return_list[8]);
-                    ShopInfoFloor.setText(rs_return_list[3]);
-                    ShopInfoLocation.setText(rs_return_list[4]);
-                    ShopInfoServiceType.setText(rs_return_list[9]);
-                    ShopInfoShopID.setText(rs_return_list[0]);
-                    ShopInfoShopName.setText(rs_return_list[1]);
+                    if (rs_return_list.length == 11){
+                        InfoShopDateSin.setText("N/A");
+                        ShopInfoAct.setText(rs_return_list[7]);
+                        ShopInfoActFrom.setText(rs_return_list[5]);
+                        ShopInfoActTo.setText(rs_return_list[6]);
+                        ShopInfoCenterID.setText(rs_return_list[2]);
+                        ShopInfoConntractID.setText("N/A");
+                        ShopInfoFloor.setText(rs_return_list[3]);
+                        ShopInfoLocation.setText(rs_return_list[4]);
+                        ShopInfoServiceType.setText(rs_return_list[9]);
+                        ShopInfoShopID.setText(rs_return_list[0]);
+                        ShopInfoShopName.setText(rs_return_list[1]);
+                        InfoShopBillingUnits.setText("N/A");
+                        InfoShopCompanyID.setText("N/A");
+                        InfoShopDateActFrom.setText("N/A");
+                        InfoShopDateActTo.setText("N/A");
+                    }else{
+                        InfoShopBillingUnits.setText(rs_return_list[13]);
+                        InfoShopCompanyID.setText(rs_return_list[14]);
+                        InfoShopDateActFrom.setText(rs_return_list[11]);
+                        InfoShopDateActTo.setText(rs_return_list[12]); 
+                        InfoShopDateSin.setText(rs_return_list[10]);
+                        ShopInfoAct.setText(rs_return_list[7]);
+                        ShopInfoActFrom.setText(rs_return_list[5]);
+                        ShopInfoActTo.setText(rs_return_list[6]);
+                        ShopInfoCenterID.setText(rs_return_list[2]);
+                        ShopInfoConntractID.setText(rs_return_list[8]);
+                        ShopInfoFloor.setText(rs_return_list[3]);
+                        ShopInfoLocation.setText(rs_return_list[4]);
+                        ShopInfoServiceType.setText(rs_return_list[9]);
+                        ShopInfoShopID.setText(rs_return_list[0]);
+                        ShopInfoShopName.setText(rs_return_list[1]);
+                        
+                    }
                 }while (rs.next());
                 prepared.close();
             }

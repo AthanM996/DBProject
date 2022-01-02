@@ -1,9 +1,7 @@
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.swing.JFrame;
 
 /*
@@ -45,7 +43,29 @@ public class InfoContractJF extends javax.swing.JFrame {
     
     public void inisialize(String select){
         Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs =null;
+        String [] list = select.split(":");
+        int id =Integer.parseInt(list[1].trim().substring(0, list[1].length()-12).trim());
+
+       
         
+        try{
+            conn = StartConn();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("select ");
+            if (rs.next() == false){
+                javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            }else{
+                do{
+
+                }while (rs.next());
+            }
+        }catch (SQLException ex){
+            System.out.println("Message: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("ErrorCode: " + ex.getErrorCode());
+        }
         
         
     }
