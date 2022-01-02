@@ -554,7 +554,6 @@ SELECT insert_firm(102, 'Village Cinemas', 'Mitropoleos 101, 54622, Thessaloniki
 				   'Ioannis Kontos', 'cine@villagesupport.gr',
 				   '23102309390', '6943985487');
 -- Contracts
-INSERT INTO contract(id, date_signed) VALUES (-1, '00/00/00');
 SELECT insert_aggreement(10, '19/11/2018', '22/10/2019', '04/11/2020', 102, 'monthly');
 SELECT insert_aggreement(22, '22/09/2009', '01/02/2010', '05/03/2020', 22, 'yearly');
 SELECT insert_aggreement(3, '01/02/2020', '14/03/2020', '31/12/2021', 4, 'weekly');
