@@ -558,8 +558,13 @@ SELECT insert_aggreement(10, '19/11/2018', '22/10/2019', '04/11/2020', 102, 'mon
 SELECT insert_aggreement(22, '22/09/2009', '01/02/2010', '05/03/2020', 22, 'yearly');
 SELECT insert_aggreement(3, '01/02/2020', '14/03/2020', '31/12/2021', 4, 'weekly');
 SELECT insert_aggreement(99, '11/12/2015', '23/01/2016', '30/05/2025', 9, 'yearly');
+
 -- Shops
 SELECT insert_store(5, 'Adidas Cosmos 2A', 1, '2', 'A', 'Friday', 'Sunday', true, 99, 'retail');
 SELECT insert_store(32, 'Crocs One Salonica 1C', 2, '1', 'C', 'Monday', 'Saturday', true, 3, 'retail');
 SELECT insert_store(2, 'Goodys Mall Athens 3F', 3, '3', 'F', 'Tuesday', 'Sunday', false, 22, 'food or drink');
 SELECT insert_store(9, 'Village Cinemas Cosmos 0A', 1, '0', 'A', 'Monday', 'Sunday', false, 10, 'entertainment');
+
+-- Invoice
+SELECT insert_bill(3, 10, 102, 500000, 10000, 1000, 511000, '20/11/2018', '21/11/2018', '22/11/2018');
+SELECT insert_bill(9, 99, 9, 100000, 1000, 100, 101100, '12/12/2015', '13/12/2015', '14/12/2015');
