@@ -66,11 +66,11 @@ CREATE TABLE public.Invoice
     CONSTRAINT Invoice_fkey_Company_id FOREIGN KEY (company_id)
         REFERENCES public.Company (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE SET NULL,
     CONSTRAINT Invoice_fkey_Contract_id FOREIGN KEY (contract_id)
         REFERENCES public.Contract (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE SET NULL
 );
 
 
