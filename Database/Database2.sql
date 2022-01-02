@@ -170,7 +170,7 @@ DROP TRIGGER IF EXISTS log_invoice ON invoice;
 
 -- Shopping_center
 
-CREATE FUNCTION Select_Mall_id() RETURNS SETOF TEXT 
+CREATE FUNCTION Select_Mall_id() RETURNS SETOF TEXT -- select_mall
 AS $$
 SELECT DISTINCT(id) 
 FROM shopping_center;
@@ -223,7 +223,7 @@ LANGUAGE SQL;
 
 -- Shop
 
-CREATE FUNCTION Select_ServiceType() RETURNS SETOF text 
+CREATE FUNCTION Select_ServiceType() RETURNS SETOF text -- select_service
 AS $$
 SELECT DISTINCT(service_type) 
 FROM Shop;
@@ -241,7 +241,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 $$
 LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION Fill_Shops() RETURNS TABLE(shop_id integer,
+CREATE OR REPLACE FUNCTION Fill_Shops() RETURNS TABLE(shop_id integer, -- fill_stores
 						      shop_name character varying,
 						      mall_id integer)
 AS $$
@@ -258,7 +258,7 @@ SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor,
 $$ 
 LANGUAGE SQL;
 
-CREATE FUNCTION Delete_Shop(integer) RETURNS void AS 
+CREATE FUNCTION Delete_Shop(integer) RETURNS void AS -- delete_store
 $$
 DELETE FROM shop * WHERE id = $1;
 $$
@@ -276,7 +276,7 @@ $$
 LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION Info_Shop(integer) RETURNS text AS 
+CREATE OR REPLACE FUNCTION Info_Shop(integer) RETURNS text AS -- info_store
 $$
 SELECT CONCAT_WS(',', S.id, S.shop_name, S.shopping_center_id, S.floor, 
 				 S.location, S.active_from, S.active_to, S.active, S.contract_id, 
@@ -288,7 +288,7 @@ $$
 LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION get_shop(integer) RETURNS text AS 
+CREATE OR REPLACE FUNCTION get_shop(integer) RETURNS text AS -- get_store
 $$
 SELECT CONCAT_WS(',', id, shop_name, shopping_center_id, floor, 
 				 location, active_from, active_to, active, contract_id, 
@@ -300,7 +300,7 @@ LANGUAGE SQL;
 
 -- Contract
 
-CREATE OR REPLACE FUNCTION Select_ContractID() RETURNS SETOF text
+CREATE OR REPLACE FUNCTION Select_ContractID() RETURNS SETOF text -- select_aggreement
 AS $$
 SELECT id 
 FROM contract;
@@ -444,7 +444,7 @@ LANGUAGE SQL;
 
 --CONSTRAINT
 
-CREATE FUNCTION get_shop_check_servicetype() RETURNS SETOF text AS 
+CREATE FUNCTION get_shop_check_servicetype() RETURNS SETOF text AS -- get_store_check_services
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
@@ -454,7 +454,7 @@ SELECT pg_get_constraintdef(oid) AS res
 $$
 LANGUAGE SQL;
 
-CREATE FUNCTION get_shop_check_activefrom() RETURNS SETOF text AS 
+CREATE FUNCTION get_shop_check_activefrom() RETURNS SETOF text AS -- get_store_check_active_from
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
@@ -465,7 +465,7 @@ $$
 LANGUAGE SQL;
 
 
-CREATE FUNCTION get_shop_check_activeto() RETURNS SETOF text AS 
+CREATE FUNCTION get_shop_check_activeto() RETURNS SETOF text AS -- get_store_check_active_to
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
@@ -476,7 +476,7 @@ $$
 LANGUAGE SQL;
 
 
-CREATE FUNCTION get_shop_check_active() RETURNS SETOF text AS 
+CREATE FUNCTION get_shop_check_active() RETURNS SETOF text AS -- get_store_check_active
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
@@ -487,7 +487,7 @@ $$
 LANGUAGE SQL;
 
 
-CREATE OR REPLACE FUNCTION get_contract_check_units() RETURNS SETOF text AS 
+CREATE OR REPLACE FUNCTION get_contract_check_units() RETURNS SETOF text AS -- get_aggreement_check_units
 $$
 SELECT pg_get_constraintdef(oid) AS res
 	  FROM   pg_catalog.pg_constraint
