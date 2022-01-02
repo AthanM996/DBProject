@@ -1,5 +1,6 @@
 import javax.swing.JFrame;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import javax.swing.DefaultListModel;
 
 public class MainFrame extends javax.swing.JFrame {
     
+    
+
     
     
     public Connection StartConn(){
@@ -88,6 +91,8 @@ public class MainFrame extends javax.swing.JFrame {
             fillMallList();
         }else if (lista == ShopsList){
             fillShopsList();
+        }else if (lista == ContractsList){
+            fillContractsList();
         }
         
     }
@@ -172,12 +177,55 @@ public class MainFrame extends javax.swing.JFrame {
                 System.out.println(ex);
             }
         }
+    }  
+    
+    
+    private void fillContractsList(){
+        DefaultListModel listmodel = (DefaultListModel) ContractsList.getModel();
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;      
+        //Θα καλειτε ενα function γαι να τραβηξει ολες τις τιμες του πινακα Contracts και να τις εισαγει στην λιστα ContractsList
+        try {
+            conn = StartConn();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT all_aggreements()");
+            //loop
+            if (rs.next() == false){
+                System.out.print("The resultSet is Empty!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Malls at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            }else{
+                do{
+                    
+                    String [] list_values = rs.getString(1).split(",");
+
+                    listmodel.addElement("Code: " + list_values[0] + " Data Singed: " + list_values[1] + " Date Active From: " + list_values[2] + " Date Active To: " + list_values[3] + " Code Company: " + list_values[4] + " Billing Units: " + list_values[5] );
+
+                }while (rs.next());
+            }
+            stmt.close();
+            ContractsList.setSelectedIndex(0);
+        }catch (SQLException ex){
+            System.out.println("SQL Exception");
+            while (ex != null){
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+                ex.getNextException();
+            }
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
+        }
     }    
     
             
     /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
     απο την λιστα MallsList */      
-    public void  deleteValueFromMallsList(){
+    private void  deleteValueFromMallsList(){
         DefaultListModel listmodel = (DefaultListModel) MallsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -207,7 +255,7 @@ public class MainFrame extends javax.swing.JFrame {
     }   
 
 
-    public void deleteShop(){
+    private void deleteShop(){
         DefaultListModel listmodel = (DefaultListModel) ShopsList.getModel();
         Connection conn = null;
         PreparedStatement prepared = null;
@@ -235,6 +283,49 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
+    
+    private void DeleteContract(){
+        DefaultListModel listmodel = (DefaultListModel) ContractsList.getModel();
+        Connection conn = null;
+        PreparedStatement prepared = null;
+        int selected_id = -1;
+        boolean error = false;
+        
+        String selected_String =(String)ContractsList.getSelectedValue();
+        String [] selected_array = selected_String.split(" ");
+        try{
+            selected_id = Integer.parseInt(selected_array[1]);
+        }catch (Exception e){
+            System.out.print(e);
+            error = true;
+        }
+        if (error){
+            javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            try{
+                conn = StartConn();
+                prepared = conn.prepareStatement("SELECT delete_aggreement(?)");
+                prepared.setInt(1,selected_id);
+                prepared.executeQuery();
+                prepared.close();
+                refresh(ShopsList);
+                javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }catch (SQLException ex){
+                if (ex.getSQLState().equals("23503")){
+                    javax.swing.JOptionPane.showMessageDialog(null, "The Delete is not Complete, please Remove the Shop with the current Contract OR change the contract at the Shop!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                }
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+            }finally{
+                try{
+                    conn.close();
+                }catch (SQLException ex){
+                    System.out.println(ex);
+                }
+            } 
+       }
+}
             
             
 
@@ -247,7 +338,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     //Handler για να διαχειριζεται ολα τα buttons
-    public void ACtionPerformed(java.awt.event.ActionEvent e){
+    private void ACtionPerformed(java.awt.event.ActionEvent e){
         //MALLS
         if (e.getSource() == InsertMallsButton){
             MallsInsertJF MallsJF = new MallsInsertJF();
@@ -278,6 +369,14 @@ public class MainFrame extends javax.swing.JFrame {
             ShopEditJF shopEdit = new ShopEditJF();
             shopEdit.inisialize(ShopsList.getSelectedValue());
             shopEdit.setVisible(true);
+        //Contract
+        }else if (e.getSource() == ContractsRefreshButton){
+            refresh(ContractsList);
+        }else if (e.getSource() == ContractsDeleteButton){
+            DeleteContract();
+        }else if (e.getSource() == ContractsInsertButton){
+            InsertContractJF insertContract = new InsertContractJF();
+            insertContract.setVisible(true);
         }
 
     }
@@ -288,6 +387,7 @@ public class MainFrame extends javax.swing.JFrame {
         WindowAtCenter(this);
         fillMallList();
         fillShopsList();
+        fillContractsList();
     }
 
     @SuppressWarnings("unchecked")
@@ -314,6 +414,14 @@ public class MainFrame extends javax.swing.JFrame {
         ShowAllShopsButton = new javax.swing.JButton();
         EditShopsButton = new javax.swing.JButton();
         ConstantTab = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        ContractsList = new javax.swing.JList<>();
+        jLabel3 = new javax.swing.JLabel();
+        ContractsInfoButton = new javax.swing.JButton();
+        ContractsDeleteButton = new javax.swing.JButton();
+        ContractsRefreshButton = new javax.swing.JButton();
+        ContractsEditButton = new javax.swing.JButton();
+        ContractsInsertButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("DBProject");
@@ -335,7 +443,7 @@ public class MainFrame extends javax.swing.JFrame {
         MallsTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         MallsTab.setName("MallsTab"); // NOI18N
 
-        MallsList.setFont(new java.awt.Font("Arial", 1, 10)); // NOI18N
+        MallsList.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         MallsList.setModel(new javax.swing.DefaultListModel<String>()
         );
         MallsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -442,7 +550,7 @@ public class MainFrame extends javax.swing.JFrame {
         ShopTab.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         ShopTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
 
-        ShopsList.setFont(new java.awt.Font("Arial", 1, 10)); // NOI18N
+        ShopsList.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         ShopsList.setModel(new javax.swing.DefaultListModel<String>());
         ShopsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         ShopsList.setToolTipText("");
@@ -545,15 +653,94 @@ public class MainFrame extends javax.swing.JFrame {
         ConstantTab.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         ConstantTab.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
 
+        ContractsList.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        ContractsList.setModel(new javax.swing.DefaultListModel<String>());
+        ContractsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane3.setViewportView(ContractsList);
+
+        jLabel3.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
+        jLabel3.setText("A List with Contracts");
+
+        ContractsInfoButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        ContractsInfoButton.setText("Info");
+        ContractsInfoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        ContractsDeleteButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        ContractsDeleteButton.setText("Delete");
+        ContractsDeleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        ContractsRefreshButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        ContractsRefreshButton.setText("Refresh");
+        ContractsRefreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        ContractsEditButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        ContractsEditButton.setText("Edit");
+        ContractsEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        ContractsInsertButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        ContractsInsertButton.setText("Insert");
+        ContractsInsertButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ConstantTabLayout = new javax.swing.GroupLayout(ConstantTab);
         ConstantTab.setLayout(ConstantTabLayout);
         ConstantTabLayout.setHorizontalGroup(
             ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 833, Short.MAX_VALUE)
+            .addGroup(ConstantTabLayout.createSequentialGroup()
+                .addGroup(ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ConstantTabLayout.createSequentialGroup()
+                        .addGap(122, 122, 122)
+                        .addGroup(ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 598, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(ConstantTabLayout.createSequentialGroup()
+                                .addComponent(ContractsInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(47, 47, 47)
+                                .addComponent(ContractsDeleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ContractsRefreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(53, 53, 53)
+                                .addComponent(ContractsEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(53, 53, 53)
+                                .addComponent(ContractsInsertButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(ConstantTabLayout.createSequentialGroup()
+                        .addGap(331, 331, 331)
+                        .addComponent(jLabel3)))
+                .addContainerGap(113, Short.MAX_VALUE))
         );
         ConstantTabLayout.setVerticalGroup(
             ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 774, Short.MAX_VALUE)
+            .addGroup(ConstantTabLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel3)
+                .addGap(32, 32, 32)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addGroup(ConstantTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ContractsRefreshButton)
+                    .addComponent(ContractsEditButton)
+                    .addComponent(ContractsInsertButton)
+                    .addComponent(ContractsInfoButton)
+                    .addComponent(ContractsDeleteButton))
+                .addContainerGap(446, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Contracts", new javax.swing.ImageIcon(getClass().getResource("/conmono.png")), ConstantTab, "The contract for  specific shop of the mall"); // NOI18N
@@ -576,6 +763,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+
 
 
 
@@ -623,6 +812,12 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ConstantTab;
+    private javax.swing.JButton ContractsDeleteButton;
+    private javax.swing.JButton ContractsEditButton;
+    private javax.swing.JButton ContractsInfoButton;
+    private javax.swing.JButton ContractsInsertButton;
+    private javax.swing.JList<String> ContractsList;
+    private javax.swing.JButton ContractsRefreshButton;
     private javax.swing.JButton DeleteMallsButton;
     private javax.swing.JButton DeleteShopsButton;
     private javax.swing.JButton EditMallsButton;
@@ -640,7 +835,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTabbedPane TabbedPane;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }

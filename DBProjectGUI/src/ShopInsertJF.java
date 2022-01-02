@@ -289,7 +289,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
                                 javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                                 clear();
                                 break;
-                    }
+                        }
                     System.out.println("Message: " + ex.getMessage());
                     System.out.println("SQLState: " + ex.getSQLState());
                     System.out.println("ErrorCode: " + ex.getErrorCode());

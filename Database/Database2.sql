@@ -109,11 +109,11 @@ DROP TABLE IF EXISTS public.logfile;
 
 CREATE TABLE public.logfile 
 (
-	operation character varying(1) NOT NULL,
+	operation character varying(10) NOT NULL,
 	time_of_operation timestamp NOT NULL,
 	userid character varying(50) NOT NULL,
 	operation_data text,
-	CONSTRAINT logfile_checkOperation CHECK (operation IN ('D', 'U', 'I'))
+	CONSTRAINT logfile_checkOperation CHECK (operation IN ('DELETE', 'UPDATE', 'INSERT'))
 );
 
 
@@ -145,12 +145,14 @@ DROP FUNCTION IF EXISTS get_firm_id_name;
 DROP FUNCTION IF EXISTS Select_Mall_id;
 DROP FUNCTION IF EXISTS Select_ServiceType;
 DROP FUNCTION IF EXISTS Select_ContractID;
+DROP FUNCTION IF EXISTS get_id_company;
 
 DROP FUNCTION IF EXISTS get_shop_check_servicetype;
 DROP FUNCTION IF EXISTS get_shop_check_active;
 DROP FUNCTION IF EXISTS get_shop_check_activefrom;
 DROP FUNCTION IF EXISTS get_shop_check_activeto;
 DROP FUNCTION IF EXISTS get_shop;
+DROP FUNCTION IF EXISTS get_contract_check_units;
 
 DROP FUNCTION IF EXISTS all_bills;
 DROP FUNCTION IF EXISTS edit_bill;
@@ -379,6 +381,12 @@ SELECT CONCAT_WS(',', id, name) FROM company ORDER BY id;
 $$
 LANGUAGE SQL;
 
+CREATE OR REPLACE FUNCTION get_id_company() RETURNS SETOF text AS 
+$$
+SELECT id FROM company;
+$$
+LANGUAGE SQL;
+
 -- Invoice
 
 CREATE FUNCTION all_bills() RETURNS SETOF text AS
@@ -467,19 +475,30 @@ SELECT pg_get_constraintdef(oid) AS res
 $$
 LANGUAGE SQL;
 
+
+CREATE OR REPLACE FUNCTION get_contract_check_units() RETURNS SETOF text AS 
+$$
+SELECT pg_get_constraintdef(oid) AS res
+	  FROM   pg_catalog.pg_constraint
+	  WHERE  contype  = 'c'                          
+	  AND    conrelid = 'public.contract'::regclass  
+	  AND    conname = 'contract_check_billingunits';
+$$
+LANGUAGE SQL;
+
 -- Triggers
 
 CREATE FUNCTION log_operation() RETURNS TRIGGER AS
 $$
 BEGIN
 	IF (TG_OP = 'DELETE') THEN
-		INSERT INTO logfile SELECT 'D', now(), user, CONCAT_WS(',', OLD.*);
+		INSERT INTO logfile SELECT 'DELETE', now(), user, CONCAT_WS(',', OLD.*);
 		RETURN OLD;
 	ELSIF (TG_OP = 'UPDATE') THEN
-		INSERT INTO logfile SELECT 'U', now(), user, CONCAT_WS(',', NEW.*);
+		INSERT INTO logfile SELECT 'UPDATE', now(), user, CONCAT_WS(',', NEW.*);
 		RETURN NEW;
 	ELSIF (TG_OP = 'INSERT') THEN
-		INSERT INTO logfile SELECT 'I', now(), user, CONCAT_WS(',', NEW.*);
+		INSERT INTO logfile SELECT 'INSERT', now(), user, CONCAT_WS(',', NEW.*);
 		RETURN NEW;
 	END IF;
 	RETURN NULL;
