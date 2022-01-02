@@ -198,8 +198,11 @@ public class MainFrame extends javax.swing.JFrame {
                 do{
                     
                     String [] list_values = rs.getString(1).split(",");
+                    if (list_values[0]!= "-1"){
+                        listmodel.addElement("Code: " + list_values[0] + " Data Singed: " + list_values[1] + " Date Active From: " + list_values[2] + " Date Active To: " + list_values[3] + " Code Company: " + list_values[4] + " Billing Units: " + list_values[5] );
+                    }
 
-                    listmodel.addElement("Code: " + list_values[0] + " Data Singed: " + list_values[1] + " Date Active From: " + list_values[2] + " Date Active To: " + list_values[3] + " Code Company: " + list_values[4] + " Billing Units: " + list_values[5] );
+                    
 
                 }while (rs.next());
             }
