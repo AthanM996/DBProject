@@ -386,6 +386,8 @@ public class MainFrame extends javax.swing.JFrame {
             infoCon.setVisible(true);
         }
 
+
+
     }
     
     

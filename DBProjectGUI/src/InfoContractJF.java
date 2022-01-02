@@ -43,7 +43,7 @@ public class InfoContractJF extends javax.swing.JFrame {
     
     public void inisialize(String select){
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement prepared = null;
         ResultSet rs =null;
         String [] list = select.split(":");
         int id =Integer.parseInt(list[1].trim().substring(0, list[1].length()-12).trim());
@@ -52,13 +52,15 @@ public class InfoContractJF extends javax.swing.JFrame {
         
         try{
             conn = StartConn();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("select ");
+            prepared = conn.prepareStatement("SELECT get_con_voice(?)");
+            prepared.setInt(1,id);
+            rs = prepared.executeQuery();
             if (rs.next() == false){
                 javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 do{
-
+                    String [] value_list = rs.getString(1).split(",");
+                    
                 }while (rs.next());
             }
         }catch (SQLException ex){
