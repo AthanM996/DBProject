@@ -94,6 +94,8 @@ public class MainFrame extends javax.swing.JFrame {
             fillShopsList();
         }else if (lista == ContractsList){
             fillContractsList();
+        }else if (lista == CompanyList){
+            fillCompanyList();
         }
         
     }
@@ -225,7 +227,47 @@ public class MainFrame extends javax.swing.JFrame {
                 System.out.println(ex);
             }
         }
-    }    
+    } 
+    
+    public void fillCompanyList(){
+        DefaultListModel listmodel = (DefaultListModel) CompanyList.getModel();
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;    
+        
+        try {
+            conn = StartConn();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT all_firms()");
+            //loop
+            if (rs.next() == false){
+                System.out.print("The resultSet is Empty!");
+                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Compans at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            }else{
+                do{
+                    
+                    String [] list_values = rs.getString(1).split(",");                   
+                    listmodel.addElement("Code: " + list_values[0] + " Name: " + list_values[1] + " Address: " + list_values[2] + " Contract Pernos: " + list_values[3] + " Contract Email: " + list_values[4] + " Contract Phone: " + list_values[5] + "Contract Mobile: " + list_values[6] );
+                    
+                }while (rs.next());
+            }
+            stmt.close();
+            CompanyList.setSelectedIndex(0);
+        }catch (SQLException ex){
+
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+               
+            
+        }finally{
+            try{
+                conn.close();
+            }catch (SQLException ex){
+                System.out.println(ex);
+            }
+        }
+    }
     
             
     /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
@@ -333,9 +375,51 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             } 
        }
-}
+    }
             
-            
+    private void DeleteCompany(){
+        DefaultListModel listmodel = (DefaultListModel) CompanyList.getModel();
+        Connection conn = null;
+        PreparedStatement prepared = null;
+        int selected_id = -1;
+        boolean error = false;
+        
+        String selected_String =(String)CompanyList.getSelectedValue();
+        String [] selected_array = selected_String.split(" ");
+        try{
+            selected_id = Integer.parseInt(selected_array[1]);
+        }catch (Exception e){
+            System.out.print(e);
+            error = true;
+        }
+        if (error){
+            javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            try{
+                conn = StartConn();
+                prepared = conn.prepareStatement("SELECT delete_firm(?)");
+                prepared.setInt(1,selected_id);
+                prepared.executeQuery();
+                prepared.close();
+                refresh(ShopsList);
+                javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }catch (SQLException ex){
+                if (ex.getSQLState().equals("23503")){
+                    javax.swing.JOptionPane.showMessageDialog(null, "The Delete is not Complete, please Remove the Shop with the current Contract OR change the contract at the Shop!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                }
+                System.out.println("Message: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("ErrorCode: " + ex.getErrorCode());
+            }finally{
+                try{
+                    conn.close();
+                }catch (SQLException ex){
+                    System.out.println(ex);
+                }
+            } 
+       }
+    }       
+        
 
    
     private void WindowAtCenter(JFrame objFrame){
@@ -401,9 +485,21 @@ public class MainFrame extends javax.swing.JFrame {
         }else if (e.getSource() == InsertVoiceButton){
             InserInvoice insertVoice = new InserInvoice();
             insertVoice.setVisible(true);
-
+        //Company
+        }else if (e.getSource() == CompanyInsertButton){
+            InsertCompany insertCompany = new InsertCompany();
+            insertCompany.setVisible(true);
+        }else if (e.getSource() == CompanyDeleteButton){
+            DeleteCompany();
+            refresh(CompanyList);
+        }else if (e.getSource() == CompanyEditButton){
+            EditCompany edit = new EditCompany();
+            edit.inisialize(CompanyList.getSelectedValue());
+            edit.setVisible(true);
+        }else if (e.getSource() == CompanyRefreshButton){
+            refresh(CompanyList);
         }
-
+        
 
 
     }
@@ -415,6 +511,7 @@ public class MainFrame extends javax.swing.JFrame {
         fillMallList();
         fillShopsList();
         fillContractsList();
+        fillCompanyList();
     }
 
     @SuppressWarnings("unchecked")
@@ -450,6 +547,14 @@ public class MainFrame extends javax.swing.JFrame {
         ContractsEditButton = new javax.swing.JButton();
         ContractsInsertButton = new javax.swing.JButton();
         InsertVoiceButton = new javax.swing.JToggleButton();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        CompanyList = new javax.swing.JList<>();
+        CompanyInsertButton = new javax.swing.JButton();
+        CompanyEditButton = new javax.swing.JButton();
+        CompanyDeleteButton = new javax.swing.JButton();
+        CompanyRefreshButton = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("DBProject");
@@ -787,6 +892,89 @@ public class MainFrame extends javax.swing.JFrame {
         TabbedPane.addTab("Contracts", new javax.swing.ImageIcon(getClass().getResource("/conmono.png")), ConstantTab, "The contract for  specific shop of the mall"); // NOI18N
         ConstantTab.getAccessibleContext().setAccessibleName("ConstractTab");
 
+        jPanel1.setBackground(new java.awt.Color(200, 255, 240));
+
+        CompanyList.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        CompanyList.setModel(new javax.swing.DefaultListModel<String>());
+        CompanyList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane4.setViewportView(CompanyList);
+
+        CompanyInsertButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        CompanyInsertButton.setText("Insert");
+        CompanyInsertButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        CompanyEditButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        CompanyEditButton.setText("Edit");
+        CompanyEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        CompanyDeleteButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        CompanyDeleteButton.setText("Delete");
+        CompanyDeleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        CompanyRefreshButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        CompanyRefreshButton.setText("Refresh");
+        CompanyRefreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel4.setText("A List with the Companys");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(128, 128, 128)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(CompanyInsertButton, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(66, 66, 66)
+                                .addComponent(CompanyEditButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(CompanyDeleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(74, 74, 74)
+                                .addComponent(CompanyRefreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(324, 324, 324)
+                        .addComponent(jLabel4)))
+                .addContainerGap(132, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(47, 47, 47)
+                .addComponent(jLabel4)
+                .addGap(26, 26, 26)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(CompanyInsertButton)
+                    .addComponent(CompanyEditButton)
+                    .addComponent(CompanyDeleteButton)
+                    .addComponent(CompanyRefreshButton))
+                .addContainerGap(483, Short.MAX_VALUE))
+        );
+
+        TabbedPane.addTab("Company", new javax.swing.ImageIcon(getClass().getResource("/output-onlinepngtools.png")), jPanel1); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -804,18 +992,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -854,6 +1030,11 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CompanyDeleteButton;
+    private javax.swing.JButton CompanyEditButton;
+    private javax.swing.JButton CompanyInsertButton;
+    private javax.swing.JList<String> CompanyList;
+    private javax.swing.JButton CompanyRefreshButton;
     private javax.swing.JPanel ConstantTab;
     private javax.swing.JButton ContractsDeleteButton;
     private javax.swing.JButton ContractsEditButton;
@@ -868,6 +1049,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton InfoShopsButton;
     private javax.swing.JButton InsertMallsButton;
     private javax.swing.JButton InsertShopsButton;
+    private javax.swing.JToggleButton InsertVoiceButton;
     private javax.swing.JList MallsList;
     private javax.swing.JPanel MallsTab;
     private javax.swing.JButton RefreshMallsButton;
@@ -879,9 +1061,11 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JToggleButton InsertVoiceButton;
+    private javax.swing.JScrollPane jScrollPane4;
     // End of variables declaration//GEN-END:variables
 }

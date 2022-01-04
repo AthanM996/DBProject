@@ -150,6 +150,7 @@ DROP FUNCTION IF EXISTS Select_ServiceType;
 DROP FUNCTION IF EXISTS Select_ContractID;
 DROP FUNCTION IF EXISTS get_id_company;
 DROP FUNCTION IF EXISTS select_malll;
+DROP FUNCTION IF EXISTS get_firm;
 
 DROP FUNCTION IF EXISTS get_store_check_services;
 DROP FUNCTION IF EXISTS get_store_check_active;
@@ -413,6 +414,14 @@ LANGUAGE SQL;
 CREATE OR REPLACE FUNCTION get_id_company() RETURNS SETOF text AS 
 $$
 SELECT id FROM company;
+$$
+LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_firm(integer) RETURNS SETOF text AS
+$$
+SELECT CONCAT_WS(',', id, name, address, contact_person, contact_email, contact_phone, contact_mobile)
+FROM company
+WHERE id=$1;
 $$
 LANGUAGE SQL;
 
