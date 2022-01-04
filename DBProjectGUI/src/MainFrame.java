@@ -84,6 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
     
+    //Για να κανει refresh τα JList 
     public void refresh(javax.swing.JList lista){
         DefaultListModel listmodel = (DefaultListModel) lista.getModel();
         listmodel.removeAllElements();
@@ -97,6 +98,7 @@ public class MainFrame extends javax.swing.JFrame {
         
     }
     
+    //Γεμιζοι το JList για τα Shops
     private void fillShopsList(){
         DefaultListModel list_model = (DefaultListModel) ShopsList.getModel();
         Connection conn=null;
@@ -106,7 +108,7 @@ public class MainFrame extends javax.swing.JFrame {
         try{
            conn = StartConn();
            stmt = conn.createStatement();
-           rs = stmt.executeQuery("SELECT Fill_shops()");
+           rs = stmt.executeQuery("SELECT fill_stores()");
            //loop
            if (rs.next() == false){
                System.out.print("The resultSet is Empty");
@@ -179,7 +181,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }  
     
-    
+    //Γεμιζοι το Jlist για τα Contracts 
     private void fillContractsList(){
         DefaultListModel listmodel = (DefaultListModel) ContractsList.getModel();
         Connection conn = null;
@@ -257,7 +259,8 @@ public class MainFrame extends javax.swing.JFrame {
         }        
     }   
 
-
+    /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
+    απο την λιστα ShopsList */
     private void deleteShop(){
         DefaultListModel listmodel = (DefaultListModel) ShopsList.getModel();
         Connection conn = null;
@@ -268,7 +271,7 @@ public class MainFrame extends javax.swing.JFrame {
         int selected_id = Integer.parseInt(selected_array[1]);
         try{
             conn = StartConn();
-            prepared = conn.prepareStatement("SELECT Delete_Shop(?)");
+            prepared = conn.prepareStatement("SELECT delete_store(?)");
             prepared.setInt(1,selected_id);
             prepared.executeQuery();
             prepared.close();
@@ -287,6 +290,8 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
     
+    /*Μεθοδος για την διαγραφη του επιλεγμενου στοιχειου απο την βαση, 
+    απο την λιστα ContractList */
     private void DeleteContract(){
         DefaultListModel listmodel = (DefaultListModel) ContractsList.getModel();
         Connection conn = null;
@@ -379,6 +384,7 @@ public class MainFrame extends javax.swing.JFrame {
             refresh(ContractsList);
         }else if (e.getSource() == ContractsDeleteButton){
             DeleteContract();
+            refresh(ContractsList);
         }else if (e.getSource() == ContractsInsertButton){
             InsertContractJF insertContract = new InsertContractJF();
             insertContract.setVisible(true);
@@ -386,8 +392,16 @@ public class MainFrame extends javax.swing.JFrame {
             InfoContractJF infoCon = new InfoContractJF();
             if (infoCon.inisialize(ContractsList.getSelectedValue())){
                 infoCon.setVisible(true);
+            }  
+        }else if (e.getSource() == ContractsEditButton){
+            EditContractJF editCon = new EditContractJF();
+            if (editCon.inisialize(ContractsList.getSelectedValue())){
+                editCon.setVisible(true);
             }
-            
+        }else if (e.getSource() == InsertVoiceButton){
+            InserInvoice insertVoice = new InserInvoice();
+            insertVoice.setVisible(true);
+
         }
 
 
@@ -435,6 +449,7 @@ public class MainFrame extends javax.swing.JFrame {
         ContractsRefreshButton = new javax.swing.JButton();
         ContractsEditButton = new javax.swing.JButton();
         ContractsInsertButton = new javax.swing.JButton();
+        InsertVoiceButton = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("DBProject");
@@ -714,6 +729,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        InsertVoiceButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        InsertVoiceButton.setText("Insert Invoice");
+        InsertVoiceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACtionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ConstantTabLayout = new javax.swing.GroupLayout(ConstantTab);
         ConstantTab.setLayout(ConstantTabLayout);
         ConstantTabLayout.setHorizontalGroup(
@@ -736,7 +759,10 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(ContractsInsertButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(ConstantTabLayout.createSequentialGroup()
                         .addGap(331, 331, 331)
-                        .addComponent(jLabel3)))
+                        .addComponent(jLabel3))
+                    .addGroup(ConstantTabLayout.createSequentialGroup()
+                        .addGap(357, 357, 357)
+                        .addComponent(InsertVoiceButton)))
                 .addContainerGap(113, Short.MAX_VALUE))
         );
         ConstantTabLayout.setVerticalGroup(
@@ -753,7 +779,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(ContractsInsertButton)
                     .addComponent(ContractsInfoButton)
                     .addComponent(ContractsDeleteButton))
-                .addContainerGap(446, Short.MAX_VALUE))
+                .addGap(35, 35, 35)
+                .addComponent(InsertVoiceButton)
+                .addContainerGap(386, Short.MAX_VALUE))
         );
 
         TabbedPane.addTab("Contracts", new javax.swing.ImageIcon(getClass().getResource("/conmono.png")), ConstantTab, "The contract for  specific shop of the mall"); // NOI18N
@@ -776,6 +804,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+
 
 
 
@@ -852,5 +882,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JToggleButton InsertVoiceButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -90,7 +90,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             conn = StartConn();
             //Γεμισμα με τις τιμες απο τον πινακα Malls με το διαθεσιμα ids 
             stmt_MallID = conn.createStatement();
-            rs_MallID = stmt_MallID.executeQuery("SELECT Select_Mall_id()");
+            rs_MallID = stmt_MallID.executeQuery("SELECT select_malll()");
             if (rs_MallID.next() == false){
                 flag = true;
                 ShopInsertSubmitButton.setEnabled(false);
@@ -102,7 +102,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             //Γεμισμα με τις τιμες απο τον πινακα contract με το διαθεσημα id
             stmt_ContractID = conn.createStatement();      
-            rs_ContractID = stmt_ContractID.executeQuery("SELECT Select_ContractID()");
+            rs_ContractID = stmt_ContractID.executeQuery("SELECT select_aggreement()");
             if (rs_ContractID.next() == false){
                 flag = true;
                 ShopInsertSubmitButton.setEnabled(false);
@@ -117,7 +117,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             //Γεμισμα με τις τιμες απο το constraint για τα Service Type
             stmt_serviceType = conn.createStatement();
-            rs_serviceType = stmt_serviceType.executeQuery("SELECT get_shop_check_servicetype()");
+            rs_serviceType = stmt_serviceType.executeQuery("SELECT get_store_check_services()");
             if (rs_serviceType.next() == false){
                 ShopInsertSubmitButton.setEnabled(false);
                 ShopInsertClearButton.setEnabled(false);
@@ -135,7 +135,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             //Εισαγωγη των τιμων του constraint Active From
             stmt_ActFrom = conn.createStatement();
-            rs_ActFrom = stmt_ActFrom.executeQuery("SELECT get_shop_check_activefrom()");
+            rs_ActFrom = stmt_ActFrom.executeQuery("SELECT get_store_check_active_from()");
             if (rs_ActFrom.next() == false){
                 ShopInsertSubmitButton.setEnabled(false);
                 ShopInsertClearButton.setEnabled(false);
@@ -153,7 +153,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             //Εισαγωγη των τιμων του constraint Active To
             stmt_ActTo = conn.createStatement();
-            rs_ActTo = stmt_ActFrom.executeQuery("SELECT get_shop_check_activeto()");
+            rs_ActTo = stmt_ActFrom.executeQuery("SELECT get_store_check_active_to()");
             if (rs_ActTo.next() == false){
                 ShopInsertSubmitButton.setEnabled(false);
                 ShopInsertClearButton.setEnabled(false);
@@ -171,7 +171,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             //Εισαγωγη των τιμων του constraint Active
             stmt_Act = conn.createStatement();
-            rs_Act = stmt_Act.executeQuery("SELECT get_shop_check_active()");
+            rs_Act = stmt_Act.executeQuery("SELECT get_store_check_active()");
             if (rs_Act.next() == false){
                 ShopInsertSubmitButton.setEnabled(false);
                 ShopInsertClearButton.setEnabled(false);

@@ -44,7 +44,7 @@ public class InsertContractJF extends javax.swing.JFrame {
     }
     
     
-    
+    //Για την διαχειρηση των Events 
     private void ACtionPerformed(java.awt.event.ActionEvent e){
            if (e.getSource() == InsertConClearButton){
               clear();
@@ -55,12 +55,19 @@ public class InsertContractJF extends javax.swing.JFrame {
 
     }
     
+    //Καθαρισμα των componets 
     private void clear(){
         InsertConCodeTF.setText("");
         InsertConBillingUnitsCB.setSelectedIndex(0);      
-        InsertConCompanyIDCB.setSelectedIndex(0);        
+        InsertConCompanyIDCB.setSelectedIndex(0); 
+        InsertContractInvoiceAmountTF.setText("");
+        InsertContractInvoiceCodeTF.setText("");
+        InsertContractInvoiceFeeTF.setText("");
+        InsertContractInvoiceTaxTF.setText("");
+        InsertContractInvoiceTotalAmountTF.setText("");         
     }
 
+    //Αρχικοποιηση οσως componets χρειαζεται
     public void inisialize(){
         Connection conn = null;
         Statement stmt_units = null;
@@ -76,7 +83,7 @@ public class InsertContractJF extends javax.swing.JFrame {
             stmt_companyID = conn.createStatement();
             stmt_units = conn.createStatement();
             rs_companyID = stmt_companyID.executeQuery("SELECT get_id_company()");
-            rs_units = stmt_units.executeQuery("SELECT get_contract_check_units()");
+            rs_units = stmt_units.executeQuery("SELECT get_aggreement_check_units()");
             if (rs_companyID.next() == false){
                 javax.swing.JOptionPane.showMessageDialog(null, "Ther is no company, insert first company! ","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 InsertConClearButton.setEnabled(false);
@@ -114,6 +121,7 @@ public class InsertContractJF extends javax.swing.JFrame {
 
     }
 
+    //Για την επιλογη του μηνα
     public String month(String value){
         String ret = "aaa";
 
@@ -159,7 +167,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         
     }
     
-    
+    //Αποστολη
     private void submit(){
 
         Connection conn = null;
@@ -186,6 +194,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         if ((InsertConCodeTF.getText().isBlank()) || (InsertConDateActFromSpinner.getValue().toString().isBlank()) || (InsertConDateActToSpinner.getValue().toString().isBlank()) || (InsertConDateSinSpinner.getValue().toString().isBlank()) || (InsertContractInvoiceDateIssuedSpinner.getValue().toString().isBlank()) || (InsertContractInvoiceDatePaidSpinner.getValue().toString().isBlank()) || (InsertContractInvoiceTimeCreatedSpinner.getValue().toString().isBlank())) { 
             javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
+            //Ελεγχος του Contract ID
             try{
                 id = Integer.parseInt(InsertConCodeTF.getText());
             }catch (Exception e){
@@ -195,6 +204,18 @@ public class InsertContractJF extends javax.swing.JFrame {
             if (id < 0){
                 error = true;
             }
+            //Ελεγχος του Invoice ID 
+            try{
+                invoice_id = Integer.parseInt(InsertContractInvoiceCodeTF.getText());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Please enter a number at Contract Code!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
+            if (invoice_id < 0 ){
+                error = true;
+            }
+
+            //Αποθηκευση των τιμων των Spinner σε μεταβλητες
             String [] date_signed_frm = InsertConDateSinSpinner.getValue().toString().trim().split(" ");
             date_signed= String.format("%s/%s/%s",date_signed_frm[2],month(date_signed_frm[1]),date_signed_frm[5]);
 
@@ -203,20 +224,55 @@ public class InsertContractJF extends javax.swing.JFrame {
 
             String [] date_act_to_frm = InsertConDateActToSpinner.getValue().toString().trim().split(" ");
             date_act_to = String.format("%s/%s/%s",date_act_to_frm[2],month(date_act_to_frm[1]),date_act_to_frm[5]);
-             
+
+            String [] date_issued_frm = InsertContractInvoiceDateIssuedSpinner.getValue().toString().trim().split(" ");
+            date_issued = String.format("%s/%s/%s",date_issued_frm[2],month(date_issued_frm[1]),date_issued_frm[5]);
+
+            String [] time_created_frm = InsertContractInvoiceTimeCreatedSpinner.getValue().toString().trim().split(" ");
+            time_created = String.format("%s/%s/%s",time_created_frm[2],month(time_created_frm[1]),time_created_frm[5]);
+
+            String [] date_paid_frm = InsertContractInvoiceDatePaidSpinner.getValue().toString().trim().split(" ");
+            date_paid = String.format("%s/%s/%s",date_paid_frm[2],month(date_paid_frm[1]),date_paid_frm[5]);
+
             company_id = Integer.parseInt((String)InsertConCompanyIDCB.getSelectedItem());
             billing_units = (String) InsertConBillingUnitsCB.getSelectedItem();
-
-            if ((date_signed.length() != 10) || (date_act_from.length() != 10) || (date_act_to.length()!=10)){
+            //Ελεγχος για αμα εχει δωθει το σωστα format στα spinner dd/mm/yyyy
+            if ((date_signed.length() != 10) || (date_act_from.length() != 10) || (date_act_to.length()!=10) || (date_issued.length() != 10) || (time_created.length() != 10) || (date_paid.length() != 10)){
                 error =true;
                 javax.swing.JOptionPane.showMessageDialog(null, "Enter the date values with this pattern: dd/MM/yyyy","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }
+            try{
+                amount = Double.parseDouble(InsertContractInvoiceAmountTF.getText().trim());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
+            try{
+                fee =  Double.parseDouble(InsertContractInvoiceFeeTF.getText().trim());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
+            try{
+                tax = Double.parseDouble(InsertContractInvoiceTaxTF.getText().trim());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
+            try{
+                total = Double.parseDouble(InsertContractInvoiceTotalAmountTF.getText().trim());
+            }catch (Exception e){
+                javax.swing.JOptionPane.showMessageDialog(null, "Enter a number!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                error =true;
+            }
 
-
+            //Ελεγχος για να δει αμα εχει παει ακτι στραβα
             if (error){
                 javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            //Αμα δεν...
             }else{
                 try{
+                    //Αποστολη των τιμως για το Contract 
                     conn = StartConn();
                     prepared = conn.prepareStatement("SELECT insert_aggreement(?,?,?,?,?,?)");
                     prepared.setInt(1,id);
@@ -227,8 +283,24 @@ public class InsertContractJF extends javax.swing.JFrame {
                     prepared.setString(6,billing_units);
                     prepared.executeQuery();
                     prepared.close();
+
+                    //Αποστολη των τιμω για το Invoice 
+                    prepared_invoice = conn.prepareStatement("SELECT insert_bill(?,?,?,?,?,?,?,?,?,?)");
+                    prepared_invoice.setInt(1,invoice_id);
+                    prepared_invoice.setInt(2,id);
+                    prepared_invoice.setInt(3,company_id);
+                    prepared_invoice.setDouble(4, amount);
+                    prepared_invoice.setDouble(5,fee);
+                    prepared_invoice.setDouble(6,tax);
+                    prepared_invoice.setDouble(7,total);
+                    prepared_invoice.setString(8,time_created);
+                    prepared_invoice.setString(9,date_issued);
+                    prepared_invoice.setString(10,date_paid);
+                    prepared_invoice.executeQuery();
+                    prepared_invoice.close();
                     javax.swing.JOptionPane.showMessageDialog(null, "The Insert Complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 }catch (SQLException ex){
+                    //Γιθα την περιπτωση που υπαρχεδι ειδη τιμη
                     switch (ex.getSQLState()){
                         case "23505":
                             javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -251,6 +323,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         }   
     }
     
+    //Μεθοδος για την τοποθεσια του frame στο κεντρο
     private void WindowAtCenter(JFrame objFrame){
         Dimension objDimension = Toolkit.getDefaultToolkit().getScreenSize();
         int iCoordX = (objDimension.width - objFrame.getWidth()) / 2;
@@ -265,7 +338,7 @@ public class InsertContractJF extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -282,16 +355,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         InsertConCodeTF = new javax.swing.JTextField();
         InsertConBillingUnitsCB = new javax.swing.JComboBox<>();
 
-        InsertConDateSinSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
-        InsertConDateSinSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateSinSpinner, "dd/MM/yyyy"));
-        
-        InsertConDateActFromSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
-        InsertConDateActFromSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateActFromSpinner, "dd/MM/yyyy"));
-
-        InsertConDateActToSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
-        InsertConDateActToSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateActToSpinner, "dd/MM/yyyy"));
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -300,14 +364,29 @@ public class InsertContractJF extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         InsertContractInvoiceCodeTF = new javax.swing.JTextField();
-        InsertContractInvoiceCompanyCodeCB = new javax.swing.JComboBox<>();
         InsertContractInvoiceAmountTF = new javax.swing.JTextField();
         InsertContractInvoiceFeeTF = new javax.swing.JTextField();
         InsertContractInvoiceTaxTF = new javax.swing.JTextField();
         InsertContractInvoiceTotalAmountTF = new javax.swing.JTextField();
-        InsertContractInvoiceDateIssuedSpinner = new javax.swing.JSpinner();
-        InsertContractInvoiceTimeCreatedSpinner = new javax.swing.JSpinner();
-        InsertContractInvoiceDatePaidSpinner = new javax.swing.JSpinner();
+
+        InsertConDateSinSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertConDateSinSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateSinSpinner, "dd/MM/yyyy"));
+        
+        InsertConDateActFromSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertConDateActFromSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateActFromSpinner, "dd/MM/yyyy"));
+
+        InsertConDateActToSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertConDateActToSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertConDateActToSpinner, "dd/MM/yyyy"));
+
+        InsertContractInvoiceDateIssuedSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertContractInvoiceDateIssuedSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertContractInvoiceDateIssuedSpinner, "dd/MM/yyyy"));
+
+        InsertContractInvoiceTimeCreatedSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertContractInvoiceTimeCreatedSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertContractInvoiceTimeCreatedSpinner, "dd/MM/yyyy"));
+
+        InsertContractInvoiceDatePaidSpinner = new javax.swing.JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.MONTH));
+        InsertContractInvoiceDatePaidSpinner.setEditor(new javax.swing.JSpinner.DateEditor(InsertContractInvoiceDatePaidSpinner, "dd/MM/yyyy"));
+
         jLabel17 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -322,7 +401,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         InsertConClearButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         InsertConClearButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                InsertConClearButtonActionPerformed(evt);
+                ACtionPerformed(evt);
             }
         });
 
@@ -331,7 +410,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         InsertConSubmitButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         InsertConSubmitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                InsertConSubmitButtonActionPerformed(evt);
+                ACtionPerformed(evt);
             }
         });
 
@@ -357,13 +436,10 @@ public class InsertContractJF extends javax.swing.JFrame {
 
         InsertConCodeTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
-        InsertConDateSinSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(315648360000L), new java.util.Date(315648360000L), new java.util.Date(315648360000L), java.util.Calendar.DAY_OF_MONTH));
+        
 
         jLabel8.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel8.setText("Invoice Code:");
-
-        jLabel9.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
-        jLabel9.setText("Company Code:");
 
         jLabel10.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel10.setText("Amount:");
@@ -387,8 +463,6 @@ public class InsertContractJF extends javax.swing.JFrame {
         jLabel16.setText("Date Paid:");
 
         InsertContractInvoiceCodeTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-
-        InsertContractInvoiceCompanyCodeCB.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
         InsertContractInvoiceAmountTF.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
 
@@ -414,47 +488,41 @@ public class InsertContractJF extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(336, 336, 336)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel12))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGap(31, 31, 31))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(31, 31, 31))
+                                    .addComponent(InsertConCodeTF)
+                                    .addComponent(InsertConDateSinSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                    .addComponent(InsertConDateActFromSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(InsertConCodeTF, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
-                            .addComponent(InsertConDateSinSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
-                            .addComponent(InsertConDateActFromSpinner)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel12))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(InsertContractInvoiceCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(InsertContractInvoiceTaxTF, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                                        .addComponent(InsertContractInvoiceFeeTF)
+                                        .addComponent(InsertContractInvoiceAmountTF)))))
+                        .addGap(86, 86, 86))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(InsertContractInvoiceTaxTF)
-                                .addComponent(InsertContractInvoiceFeeTF)
-                                .addComponent(InsertContractInvoiceAmountTF)
-                                .addComponent(InsertContractInvoiceCompanyCodeCB, 0, 130, Short.MAX_VALUE))
-                            .addComponent(InsertContractInvoiceCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(86, 86, 86)
+                        .addContainerGap()
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -475,7 +543,7 @@ public class InsertContractJF extends javax.swing.JFrame {
                                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
                                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -487,15 +555,16 @@ public class InsertContractJF extends javax.swing.JFrame {
                         .addGap(139, 139, 139))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(InsertConClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(InsertConSubmitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(326, 326, 326)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(InsertConClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36)
-                        .addComponent(InsertConSubmitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(183, 183, 183))))
+                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -520,47 +589,42 @@ public class InsertContractJF extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(InsertConDateActFromSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InsertConDateActToSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30)
+                .addGap(39, 39, 39)
                 .addComponent(jLabel17)
-                .addGap(9, 9, 9)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(InsertContractInvoiceCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
+                .addGap(45, 45, 45)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(InsertContractInvoiceCompanyCodeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(14, 14, 14)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel14)
-                            .addComponent(InsertContractInvoiceDateIssuedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(InsertContractInvoiceAmountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(7, 7, 7)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(80, 80, 80)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel14)
+                                    .addComponent(InsertContractInvoiceDateIssuedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel10)
+                                    .addComponent(InsertContractInvoiceAmountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(56, 56, 56))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(InsertContractInvoiceCodeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(133, 133, 133)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel15)
-                            .addComponent(InsertContractInvoiceTimeCreatedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(InsertContractInvoiceFeeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(12, 12, 12)
+                            .addComponent(InsertContractInvoiceTimeCreatedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(InsertContractInvoiceFeeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11))
+                        .addGap(56, 56, 56)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel16)
+                                .addComponent(InsertContractInvoiceTaxTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel12))
                             .addComponent(InsertContractInvoiceDatePaidSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(22, 22, 22)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(InsertContractInvoiceTaxTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 67, Short.MAX_VALUE))
+                        .addGap(0, 114, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(InsertContractInvoiceTotalAmountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(InsertContractInvoiceTotalAmountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(InsertConClearButton)
@@ -572,7 +636,9 @@ public class InsertContractJF extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -580,7 +646,7 @@ public class InsertContractJF extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>  
 
 
     
@@ -606,6 +672,8 @@ public class InsertContractJF extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(InsertContractJF.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+                
+                
         //</editor-fold>
 
         /* Create and display the form */
@@ -627,7 +695,6 @@ public class InsertContractJF extends javax.swing.JFrame {
     private javax.swing.JButton InsertConSubmitButton;
     private javax.swing.JTextField InsertContractInvoiceAmountTF;
     private javax.swing.JTextField InsertContractInvoiceCodeTF;
-    private javax.swing.JComboBox<String> InsertContractInvoiceCompanyCodeCB;
     private javax.swing.JSpinner InsertContractInvoiceDateIssuedSpinner;
     private javax.swing.JSpinner InsertContractInvoiceDatePaidSpinner;
     private javax.swing.JTextField InsertContractInvoiceFeeTF;
@@ -650,7 +717,6 @@ public class InsertContractJF extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

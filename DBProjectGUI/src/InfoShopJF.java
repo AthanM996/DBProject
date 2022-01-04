@@ -53,7 +53,7 @@ public class InfoShopJF extends javax.swing.JFrame {
       
         try{
             conn = StartConn();
-            prepared = conn.prepareStatement("SELECT Info_Shop(?)");
+            prepared = conn.prepareStatement("SELECT info_store(?)");
             prepared.setInt(1, id);
             rs = prepared.executeQuery();
             if (rs.next() == false){
