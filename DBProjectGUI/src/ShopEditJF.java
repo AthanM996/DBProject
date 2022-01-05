@@ -22,9 +22,9 @@ public class ShopEditJF extends javax.swing.JFrame {
     
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;   
         try{
             conn= DriverManager.getConnection(url, username, passwd);
@@ -285,7 +285,7 @@ public class ShopEditJF extends javax.swing.JFrame {
         
         
         if ((ShopEditFloorTF.getText().isBlank()) || (ShopEditLocationTF.getText().isBlank()) || (ShopEditShopNameTF.getText().isBlank())){
-            javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Please fill all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
                 shop_id = Integer.parseInt(ShopEditIDLabel.getText().trim());
@@ -318,7 +318,7 @@ public class ShopEditJF extends javax.swing.JFrame {
                prepared.setString(10, service_type);
                prepared.executeQuery();
                clear();
-               javax.swing.JOptionPane.showMessageDialog(null, "The subbmit has complete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+               javax.swing.JOptionPane.showMessageDialog(null, "The subbmit has been completed","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                    System.out.println("Message: " + ex.getMessage());
                    System.out.println("SQLState: " + ex.getSQLState());

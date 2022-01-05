@@ -10,9 +10,9 @@ public class MallsInsertJF extends javax.swing.JFrame {
     
     public Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -50,7 +50,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
         int addressNum;
         //Ελεγχος για αμα εχουν συμπληρωθει ολα τα πεδια 
         if ((newMallAdressNumTF.getText().isBlank()) || (newMallAdressTF.getText().isBlank()) || (newMallNameTF.getText().isBlank()) ||  (newMallCodeTF.getText().isBlank()) || (newMallTKTF.getText().isBlank()) || (newMallTownTF.getText().isBlank())){
-           javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+           javax.swing.JOptionPane.showMessageDialog(null, "Please fill all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         //Προετοιμασια του address για να περασει στην βαση
         }else{
             //Αρχηκοποιηση Μεταβλητων ωστε να περασουν στην βαση
@@ -84,7 +84,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
             try{
                  tk = Integer.parseInt(newMallTKTF.getText().trim());
                  if (newMallTKTF.getText().trim().length()!=5){
-                     javax.swing.JOptionPane.showMessageDialog(null, "Please enter a postal code at correct format!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                     javax.swing.JOptionPane.showMessageDialog(null, "Please enter a postal code with the correct format!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                      error=true;
                  }else{
                      mallAddress = mallAddress + ", " + tk + ", " + newMallTownTF.getText().trim();
@@ -99,7 +99,7 @@ public class MallsInsertJF extends javax.swing.JFrame {
             //Ελεγχος για αμα πηγε κατι στραβα
             if (error){
                 System.out.println("Error");
-                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values, the submit has failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 //Δημιουργια συνδεσης
                 try{
@@ -109,13 +109,13 @@ public class MallsInsertJF extends javax.swing.JFrame {
                     prepared.setString(2, mallName);
                     prepared.setString(3, mallAddress);
                     prepared.executeQuery();
-                    javax.swing.JOptionPane.showMessageDialog(null, "Values has insert Correct","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Values have been inserted correctly.","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     prepared.close();
                 }catch (SQLException ex){
                     System.out.println("SQL Exception");
                     switch (ex.getSQLState()){
                         case "23505":
-                            javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                            javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                             clear();
 //                            MallsInsertJF MallsJF = new MallsInsertJF();
 //                            MallsJF.setVisible(true);

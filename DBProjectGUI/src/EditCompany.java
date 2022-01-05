@@ -13,9 +13,9 @@ public class EditCompany extends javax.swing.JFrame {
     
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -55,7 +55,7 @@ public class EditCompany extends javax.swing.JFrame {
                 prepared.setInt(1,id);                
                 rs = prepared.executeQuery();
                 if (rs.next() == false){
-                    javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Something went wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 }else{
                     do{
                         String [] list_val = rs.getString(1).split(",");
@@ -120,7 +120,7 @@ public class EditCompany extends javax.swing.JFrame {
                 prepared.setString(7,contract_mobile);
                 prepared.executeQuery();
                 prepared.close();
-                javax.swing.JOptionPane.showMessageDialog(null, "The Update Complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Successful update!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
 
                 System.out.println("Message: " + ex.getMessage());

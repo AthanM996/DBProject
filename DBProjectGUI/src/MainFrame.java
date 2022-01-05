@@ -15,9 +15,9 @@ public class MainFrame extends javax.swing.JFrame {
     
     public Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -54,7 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
             */
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no shops for this Mall","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no shops for this Mall.","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 fillShopsList();
             }else{
                 do {
@@ -62,9 +62,9 @@ public class MainFrame extends javax.swing.JFrame {
                     System.out.println(row);
                     row = row.substring(1, row.length()-1);
                     String[] values_list = row.split(",");
-                    shop_list.addElement("Κωδικός: " + values_list[0] + " Όνομα: " + values_list[1] + " Κωδικός Mall: " + values_list[2] + " Ονομα Mall: " + values_list[3]);
+                    shop_list.addElement("Κωδικός: " + values_list[0] + " Όνομα: " + values_list[1] + " Κωδικός Mall: " + values_list[2] + " Όνομα Mall: " + values_list[3]);
                 }while (rs.next());
-                javax.swing.JOptionPane.showMessageDialog(null, "The shops has display at tab Shops","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "The shops for this Mall are displayed in the tab 'Shops'","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 prepared.close();
             }   
         }catch (SQLException ex){
@@ -114,13 +114,13 @@ public class MainFrame extends javax.swing.JFrame {
            //loop
            if (rs.next() == false){
                System.out.print("The resultSet is Empty");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Shops at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no Shops in the database.","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
            }else{
                do{
                    String row = rs.getString(1);
                    row =row.substring(1, row.length()-1);
                    String[] values=row.split(",");
-                   list_model.addElement("Κωδικός: " + values[0] + " Όνομα: " + values[1] + " Κωδικός Mall: " + values[2]);
+                   list_model.addElement("Κωδικός: " + values[0] + " | Όνομα: " + values[1] + " | Κωδικός Mall: " + values[2]);
                }while (rs.next());
                stmt.close();
                ShopsList.setSelectedIndex(0);
@@ -155,13 +155,13 @@ public class MainFrame extends javax.swing.JFrame {
             //loop
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Malls at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no Malls in the database.","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 do{
                     String row=rs.getString(1);
                     row =row.substring(1, row.length()-1);
                     String[] values=row.split(",");               
-                    listmodel.addElement("Κωδικός: " + values[0] + " Οναμα: " + values[1] + " Διευθυνση: " + values[2].substring(1, values[2].length()) + " ΤK: " + values[3] + " Πολη: " + values[4].substring(0,values[4].length()-1));
+                    listmodel.addElement("Κωδικός: " + values[0] + " | Όνομα: " + values[1] + " | Διεύθυνση: " + values[2].substring(1, values[2].length()) + " | ΤK: " + values[3] + " | Πόλη: " + values[4].substring(0,values[4].length()-1));
                 }while (rs.next());
             }
             stmt.close();
@@ -197,13 +197,13 @@ public class MainFrame extends javax.swing.JFrame {
             //loop
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Malls at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no contracts in the database.","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 do{
                     
                     String [] list_values = rs.getString(1).split(",");
                     if (!list_values[0].equals("-1")){
-                        listmodel.addElement("Code: " + list_values[0] + " Data Singed: " + list_values[1] + " Date Active From: " + list_values[2] + " Date Active To: " + list_values[3] + " Code Company: " + list_values[4] + " Billing Units: " + list_values[5] );
+                        listmodel.addElement("Code: " + list_values[0] + " | Date Singed: " + list_values[1] + " | Date Active From: " + list_values[2] + " | Date Active To: " + list_values[3] + " | Code Company: " + list_values[4] + " | Billing Units: " + list_values[5] );
                     }
 
                     
@@ -242,12 +242,12 @@ public class MainFrame extends javax.swing.JFrame {
             //loop
             if (rs.next() == false){
                 System.out.print("The resultSet is Empty!");
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no Compans at the database","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no companies in the database.","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                 do{
                     
                     String [] list_values = rs.getString(1).split(",");                   
-                    listmodel.addElement("Code: " + list_values[0] + " Name: " + list_values[1] + " Address: " + list_values[2] + " Contract Pernos: " + list_values[3] + " Contract Email: " + list_values[4] + " Contract Phone: " + list_values[5] + "Contract Mobile: " + list_values[6] );
+                    listmodel.addElement("Code: " + list_values[0] + " | Name: " + list_values[1] + " | Address: " + list_values[2] + " | Contract Person: " + list_values[3] + " | Contact Email: " + list_values[4] + " | Contact Phone: " + list_values[5] + " | Contact Mobile: " + list_values[6] );
                     
                 }while (rs.next());
             }
@@ -287,7 +287,7 @@ public class MainFrame extends javax.swing.JFrame {
             prepared.executeQuery();
             prepared.close();
             refresh(MallsList);
-            javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Successful Delete.","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }catch (SQLException ex){
             System.out.println("Message: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -318,7 +318,7 @@ public class MainFrame extends javax.swing.JFrame {
             prepared.executeQuery();
             prepared.close();
             refresh(ShopsList);
-            javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Successful Delete.","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }catch (SQLException ex){
             System.out.println("Message: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -350,7 +350,7 @@ public class MainFrame extends javax.swing.JFrame {
             error = true;
         }
         if (error){
-            javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Something went wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }else{
             try{
                 conn = StartConn();
@@ -359,10 +359,10 @@ public class MainFrame extends javax.swing.JFrame {
                 prepared.executeQuery();
                 prepared.close();
                 refresh(ShopsList);
-                javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Successful Delete.","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                 if (ex.getSQLState().equals("23503")){
-                    javax.swing.JOptionPane.showMessageDialog(null, "The Delete is not Complete, please Remove the Shop with the current Contract OR change the contract at the Shop!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Deletion failed, please remove the shop with the current contract OR change the shop's contract at the 'Shop' tab!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 }
                 System.out.println("Message: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
@@ -393,7 +393,7 @@ public class MainFrame extends javax.swing.JFrame {
             error = true;
         }
         if (error){
-            javax.swing.JOptionPane.showMessageDialog(null, "Something go wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Something went wrong!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }else{
             try{
                 conn = StartConn();
@@ -402,10 +402,10 @@ public class MainFrame extends javax.swing.JFrame {
                 prepared.executeQuery();
                 prepared.close();
                 refresh(ShopsList);
-                javax.swing.JOptionPane.showMessageDialog(null, "Succefull Delete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Successful Delete.","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
-                if (ex.getSQLState().equals("23503")){
-                    javax.swing.JOptionPane.showMessageDialog(null, "The Delete is not Complete, please Remove the Shop with the current Contract OR change the contract at the Shop!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                if (ex.getSQLState().equals("23503")){ 
+                    javax.swing.JOptionPane.showMessageDialog(null, "Deletion failed, please remove any contracts or invoices that belong to this company first!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 }
                 System.out.println("Message: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());

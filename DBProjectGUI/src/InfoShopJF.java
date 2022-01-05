@@ -18,9 +18,9 @@ public class InfoShopJF extends javax.swing.JFrame {
     
     public Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -57,7 +57,7 @@ public class InfoShopJF extends javax.swing.JFrame {
             prepared.setInt(1, id);
             rs = prepared.executeQuery();
             if (rs.next() == false){
-                javax.swing.JOptionPane.showMessageDialog(null, "The is an Error at data","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There is an Error at data","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 flag =false;
             }else{
                 do{

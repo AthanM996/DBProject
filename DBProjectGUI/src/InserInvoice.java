@@ -12,9 +12,9 @@ public class InserInvoice extends javax.swing.JFrame {
 
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -96,7 +96,7 @@ public class InserInvoice extends javax.swing.JFrame {
             //Γιθα την περιπτωση που υπαρχεδι ειδη τιμη
             switch (ex.getSQLState()){
                 case "23505":
-                    javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                     clear();
                     break;
             }
@@ -258,7 +258,7 @@ public class InserInvoice extends javax.swing.JFrame {
                 //Γιθα την περιπτωση που υπαρχεδι ειδη τιμη
                 switch (ex.getSQLState()){
                     case "23505":
-                        javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                        javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                         clear();
                         break;
                 }

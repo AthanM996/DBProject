@@ -13,9 +13,9 @@ public class InsertCompany extends javax.swing.JFrame {
     
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -53,7 +53,7 @@ public class InsertCompany extends javax.swing.JFrame {
             id = Integer.parseInt(InsertCompanyCode.getText());
         }catch (Exception e){
             System.out.println(e);
-            javax.swing.JOptionPane.showMessageDialog(null, "Please insert integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Please insert an integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             error = true;
         }
 
@@ -65,7 +65,7 @@ public class InsertCompany extends javax.swing.JFrame {
         contract_mobile =InsertCompanyContractMobile.getText();
         
         if (error){
-            javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values, the submit has failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
                 conn = StartConn();
@@ -80,12 +80,12 @@ public class InsertCompany extends javax.swing.JFrame {
                 prepared.setString(7,contract_mobile);
                 prepared.executeQuery();
                 prepared.close();
-                javax.swing.JOptionPane.showMessageDialog(null, "The Insert Complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Insert Complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                 //Γιθα την περιπτωση που υπαρχεδι ειδη τιμη
                 switch (ex.getSQLState()){
                     case "23505":
-                        javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                        javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                         clear();
                         break;
                 }

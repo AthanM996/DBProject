@@ -21,9 +21,9 @@ public class ShopInsertJF extends javax.swing.JFrame {
     
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;   
         try{
             conn= DriverManager.getConnection(url, username, passwd);
@@ -185,7 +185,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
                 }
             } 
             if (flag){
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no values at the database please insert values first!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no values in the database, please insert values first!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }
              stmt_MallID.close();
              stmt_ContractID.close();
@@ -246,7 +246,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
         
         
         if ((ShopInsertFloorTF.getText().isBlank()) || (ShopInsertLocationTF.getText().isBlank()) || (ShopInsertShopNameTF.getText().isBlank()) || (ShopInsertShopIDTF.getText().isBlank())){
-            javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Please fill all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             active = Boolean.parseBoolean((String)ShopInsertActCB.getSelectedItem());
             active_from = (String) ShopInsertActFromCB.getSelectedItem();
@@ -268,7 +268,7 @@ public class ShopInsertJF extends javax.swing.JFrame {
             }
             if (error){
                 System.out.println("Error");
-                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values, the submit has failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
                  try{
                     conn = StartConn();
@@ -285,11 +285,11 @@ public class ShopInsertJF extends javax.swing.JFrame {
                     prepared.setString(10, service_type);
                     prepared.executeQuery();
                     prepared.close();
-                    javax.swing.JOptionPane.showMessageDialog(null, "The subbmit has complete","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Submit complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     }catch (SQLException ex){
                         switch (ex.getSQLState()){
                             case "23505":
-                                javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                                javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                                 clear();
                                 break;
                         }

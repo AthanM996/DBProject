@@ -22,9 +22,9 @@ public class MallsEditJF extends javax.swing.JFrame {
     
     public Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -65,7 +65,7 @@ public class MallsEditJF extends javax.swing.JFrame {
             address = AddressEditMallTF.getText().trim() + " " + Integer.parseInt(AddressNumEditMallTF.getText().trim()) + ", " + Integer.parseInt(TKEditMallTF.getText().trim()) + ", " + TownEditMallTF.getText();
         }catch (Exception e){
             System.out.println("Not a integer");
-            javax.swing.JOptionPane.showMessageDialog(null, "Give a integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Give an integer!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             flag=true;
         }
         if ((name == null) || (address == null)){
@@ -75,7 +75,7 @@ public class MallsEditJF extends javax.swing.JFrame {
         }
         
         if (flag){
-            javax.swing.JOptionPane.showMessageDialog(null, "You give not accepted values!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Invalid values!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             try{
                 conn = StartConn();
@@ -85,13 +85,13 @@ public class MallsEditJF extends javax.swing.JFrame {
                 prepared.setString(3, address);
                 prepared.executeQuery();
                 prepared.close();
-                javax.swing.JOptionPane.showMessageDialog(null, "The values has update!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "The values have been updated!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                 System.out.println("---SQL Exception---");
                 System.out.println("Message: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("ErrorCode: " + ex.getErrorCode()); 
-                javax.swing.JOptionPane.showMessageDialog(null, "Something is gone wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Something went wrong!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             }finally{
                 try{
                     conn.close();

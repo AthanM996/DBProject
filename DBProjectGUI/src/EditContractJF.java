@@ -27,9 +27,9 @@ public class EditContractJF extends javax.swing.JFrame {
 
     private Connection StartConn(){
         String     driverClassName = "org.postgresql.Driver" ;
-        String     url = "jdbc:postgresql://localhost:5432/DBLabs" ;
+        String     url = "jdbc:postgresql://localhost:5432/DBProject" ;
         String     username = "postgres";
-        String     passwd = "147896325!";
+        String     passwd = "1";
         Connection conn = null;
         
         try{
@@ -93,7 +93,7 @@ public class EditContractJF extends javax.swing.JFrame {
             rs_companyID = stmt_companyID.executeQuery("SELECT get_id_company()");
             rs_units = stmt_units.executeQuery("SELECT get_aggreement_check_units()");
             if (rs_companyID.next() == false){
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no company, insert first company! ","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There are no companies in the database, please insert a company first! ","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 EditConClearButton.setEnabled(false);
                 EditConSubmitButton.setEnabled(false);
             }else{
@@ -128,7 +128,7 @@ public class EditContractJF extends javax.swing.JFrame {
             prepared.setInt(1,id);
             rs_pre = prepared.executeQuery();
             if (rs_pre.next() == false){
-                javax.swing.JOptionPane.showMessageDialog(null, "Ther is no invoice for this contract! Insert INVOICE First!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "There is no invoice for this contract! Insert invoice first!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                 tr = false;
             }else{
                 do {
@@ -250,7 +250,7 @@ public class EditContractJF extends javax.swing.JFrame {
         String date_paid = null;
 
         if (((EditConDateActFrom.getText().isBlank()) || (EditConDateActTo.getText().isBlank()) || (EditConDateSin.getText().isBlank()) || (EditConDateIssued.getText().isBlank()) || (EditConDatePaid.getText().isBlank()) || (EditConTimeCreated.getText().isBlank()))) { 
-            javax.swing.JOptionPane.showMessageDialog(null, "Please enter all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Please fill all the fields!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
         }else{
             //Ελεγχος του Contract ID
             try{
@@ -318,7 +318,7 @@ public class EditContractJF extends javax.swing.JFrame {
 
             //Ελεγχος για να δει αμα εχει παει ακτι στραβα
             if (error){
-                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values the submit have failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "Error at insert values, the submit has failed!","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
             //Αμα δεν...
             }else{
                 try{
@@ -348,12 +348,12 @@ public class EditContractJF extends javax.swing.JFrame {
                     prepared_invoice.setString(10,date_paid);
                     prepared_invoice.executeQuery();
                     prepared_invoice.close();
-                    javax.swing.JOptionPane.showMessageDialog(null, "The Insert Complete!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Insert completed!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 }catch (SQLException ex){
                     //Γιθα την περιπτωση που υπαρχεδι ειδη τιμη
                     switch (ex.getSQLState()){
                         case "23505":
-                            javax.swing.JOptionPane.showMessageDialog(null, "This code is already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
+                            javax.swing.JOptionPane.showMessageDialog(null, "This code already exists, give another code","WARNING",javax.swing.JOptionPane.WARNING_MESSAGE);
                             clear();
                             break;
                     }
