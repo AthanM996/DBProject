@@ -101,7 +101,7 @@ public class ShopEditJF extends javax.swing.JFrame {
             conn = StartConn();
             //Γεμισμα με τις τιμες απο τον πινακα Malls με το διαθεσιμα ids 
             stmt_MallID = conn.createStatement();
-            rs_MallID = stmt_MallID.executeQuery("SELECT select_malll())");
+            rs_MallID = stmt_MallID.executeQuery("SELECT select_malll()");
             if (rs_MallID.next() == false){
                 ShopEditSubmitButton.setEnabled(false);
                 ShopEditClearButton.setEnabled(false);
