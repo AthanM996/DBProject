@@ -120,7 +120,7 @@ public class MainFrame extends javax.swing.JFrame {
                    String row = rs.getString(1);
                    row =row.substring(1, row.length()-1);
                    String[] values=row.split(",");
-                   list_model.addElement("Κωδικός: " + values[0] + " | Όνομα: " + values[1] + " | Κωδικός Mall: " + values[2]);
+                   list_model.addElement("Κωδικός: " + values[0] + " Όνομα: " + values[1] + " Κωδικός Mall: " + values[2]);
                }while (rs.next());
                stmt.close();
                ShopsList.setSelectedIndex(0);
@@ -161,7 +161,7 @@ public class MainFrame extends javax.swing.JFrame {
                     String row=rs.getString(1);
                     row =row.substring(1, row.length()-1);
                     String[] values=row.split(",");               
-                    listmodel.addElement("Κωδικός: " + values[0] + " | Όνομα: " + values[1] + " | Διεύθυνση: " + values[2].substring(1, values[2].length()) + " | ΤK: " + values[3] + " | Πόλη: " + values[4].substring(0,values[4].length()-1));
+                    listmodel.addElement("Κωδικός: " + values[0] + " Όνομα: " + values[1] + " Διεύθυνση: " + values[2].substring(1, values[2].length()) + " ΤK: " + values[3] + " Πόλη: " + values[4].substring(0,values[4].length()-1));
                 }while (rs.next());
             }
             stmt.close();
@@ -203,7 +203,7 @@ public class MainFrame extends javax.swing.JFrame {
                     
                     String [] list_values = rs.getString(1).split(",");
                     if (!list_values[0].equals("-1")){
-                        listmodel.addElement("Code: " + list_values[0] + " | Date Singed: " + list_values[1] + " | Date Active From: " + list_values[2] + " | Date Active To: " + list_values[3] + " | Code Company: " + list_values[4] + " | Billing Units: " + list_values[5] );
+                        listmodel.addElement("Code: " + list_values[0] + " Date Singed: " + list_values[1] + " Date Active From: " + list_values[2] + " Date Active To: " + list_values[3] + " Code Company: " + list_values[4] + " Billing Units: " + list_values[5] );
                     }
 
                     
@@ -247,7 +247,7 @@ public class MainFrame extends javax.swing.JFrame {
                 do{
                     
                     String [] list_values = rs.getString(1).split(",");                   
-                    listmodel.addElement("Code: " + list_values[0] + " | Name: " + list_values[1] + " | Address: " + list_values[2] + " | Contract Person: " + list_values[3] + " | Contact Email: " + list_values[4] + " | Contact Phone: " + list_values[5] + " | Contact Mobile: " + list_values[6] );
+                    listmodel.addElement("Code: " + list_values[0] + " Name: " + list_values[1] + " Address: " + list_values[2] + " Contract Person: " + list_values[3] + " Contact Email: " + list_values[4] + " Contact Phone: " + list_values[5] + " Contact Mobile: " + list_values[6] );
                     
                 }while (rs.next());
             }
