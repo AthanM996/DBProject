@@ -318,7 +318,7 @@ public class ShopEditJF extends javax.swing.JFrame {
                prepared.setString(10, service_type);
                prepared.executeQuery();
                clear();
-               javax.swing.JOptionPane.showMessageDialog(null, "The subbmit has been completed","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+               javax.swing.JOptionPane.showMessageDialog(null, "Successful edit!","INFO",javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }catch (SQLException ex){
                    System.out.println("Message: " + ex.getMessage());
                    System.out.println("SQLState: " + ex.getSQLState());
