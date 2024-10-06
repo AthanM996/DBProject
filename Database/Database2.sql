@@ -583,10 +583,10 @@ SELECT insert_firm(9, 'Adidas', 'Tsimiski 47, 54623, Thessaloniki',
 				   'Georgios Georgiou', 'adidasgr@adidassupport.gr',
 				   '2310435422', '6943345305');
 SELECT insert_firm(4, 'Crocs', 'Egnatia 55, 54624, Thessaloniki',
-				   'Iraklis Konsoulas', 'crocsgr@crocssupport.gr',
+				   'Giannis Ioannou', 'crocsgr@crocssupport.gr',
 				   '23104433421', '6942072096');
 SELECT insert_firm(22, 'Goodys', 'Leoforos Nikis 11, 54624, Thessaloniki',
-				   'Athanasios Tzimas', 'getgood@goodys.gr',
+				   'Dimitris Karamitropoulos', 'getgood@goodys.gr',
 				   '23109394839', '6923454321');
 SELECT insert_firm(102, 'Village Cinemas', 'Mitropoleos 101, 54622, Thessaloniki',
 				   'Ioannis Kontos', 'cine@villagesupport.gr',
